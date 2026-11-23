@@ -156,7 +156,7 @@ window.PUENTES_ACTIVITIES = [
     officialUrl:"https://www.madrid.es/portales/munimadrid/es/Inicio/El-Ayuntamiento/San-Blas-Canillejas/Actividades-y-eventos/Actividades-en-el-Centro-Intergeneracional-Rio-Esmeralda/?vgnextchannel=3ef6d47ffee28010VgnVCM100000dc0ca8c0RCRD&vgnextfmt=default&vgnextoid=209713a27b142910VgnVCM2000001f4a900aRCRD",
     sourceName:"Ayuntamiento de Madrid · Centro Intergeneracional Río Esmeralda", mapsQuery:"Centro Intergeneracional Río Esmeralda Madrid",
     note:"La gratuidad está sujeta al empadronamiento en Puente de Vallecas. Confirma la convocatoria y las plazas antes de acudir."
-  }
+  },
   {
     id:"musica-cchsn", category:"musica", title:"Música y conciertos en Sierra Norte",
     municipality:"La Cabrera", zone:"Sierra Norte", area:"Sierra Norte",
