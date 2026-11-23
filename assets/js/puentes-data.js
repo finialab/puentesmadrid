@@ -137,7 +137,7 @@ window.PUENTES_ACTIVITIES = [
   {
     id:"deporte-arganzuela", category:"deporte",
     title:"Centro Deportivo Municipal Centro Integrado Arganzuela",
-    municipality:"Madrid", zone:"Arganzuela", area:"Palos de la Frontera",
+    municipality:"Madrid", zone:"Arganzuela", area:"Palos de Moguer",
     address:"Calle de Palos de la Frontera, 40, 28045 Madrid",
     summary:"Centro deportivo municipal de Arganzuela incluido en la red de instalaciones del Ayuntamiento.",
     offer:"Consulta en el portal municipal las instalaciones, actividades dirigidas y modalidades disponibles en este centro.",
@@ -167,7 +167,7 @@ window.PUENTES_ACTIVITIES = [
   {
     id:"deporte-cea", category:"deporte",
     title:"Centro Deportivo Municipal Cea Bermúdez",
-    municipality:"Madrid", zone:"Chamberí", area:"Vallehermoso",
+    municipality:"Madrid", zone:"Chamberí", area:"",
     address:"Calle de Cea Bermúdez, 3, 28003 Madrid",
     summary:"Centro deportivo situado en Chamberí e incluido en el directorio oficial municipal.",
     offer:"Consulta directamente el catálogo del centro para conocer las instalaciones, actividades dirigidas y plazas.",
