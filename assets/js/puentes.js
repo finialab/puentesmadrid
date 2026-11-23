@@ -2,7 +2,7 @@
   "use strict";
   const data = Array.isArray(window.PUENTES_ACTIVITIES) ? window.PUENTES_ACTIVITIES : [];
   const config = window.PUENTES_CONFIG || { contactEmail: "", verifiedOn: "" };
-  const zones = window.PUENTES_ZONES || {};
+  const adjacency = window.PUENTES_ADJACENCY || {};
   const zoneSelect = document.getElementById("zoneSelect");
   const townSelect = document.getElementById("townSelect");
   const searchForm = document.getElementById("searchForm");
@@ -22,7 +22,6 @@
   let hasSearched = false;
   const selected = new Set();
   let toastTimer = null;
-
   const categoryNames = { cultura: "Cultura", deporte: "Deporte", musica: "Música" };
 
   function escapeHtml(value) {
@@ -30,61 +29,49 @@
       return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char];
     });
   }
-
+  function normalize(value) {
+    return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+  }
   function showToast(message) {
     toast.textContent = message;
     toast.classList.add("is-visible");
     window.clearTimeout(toastTimer);
-    toastTimer = window.setTimeout(function () {
-      toast.classList.remove("is-visible");
-    }, 3300);
+    toastTimer = window.setTimeout(function () { toast.classList.remove("is-visible"); }, 3300);
   }
-
   function updateTownOptions() {
-    const zone = zoneSelect.value;
-    townSelect.innerHTML = "";
-    const defaultOption = document.createElement("option");
-    defaultOption.value = "";
-    defaultOption.textContent = zone === "__all" ? "Todos los municipios" : "Cualquier municipio de esta zona";
-    townSelect.appendChild(defaultOption);
-
-    if (!zone || zone === "__all" || !zones[zone]) {
-      townSelect.disabled = true;
-      return;
-    }
-    zones[zone].forEach(function (town) {
-      const option = document.createElement("option");
-      option.value = town;
-      option.textContent = town;
-      townSelect.appendChild(option);
-    });
-    townSelect.disabled = false;
+    const district = zoneSelect.value;
+    townSelect.disabled = !district || district === "__all";
+    townSelect.value = "";
+    townSelect.placeholder = townSelect.disabled
+      ? "Selecciona primero un distrito"
+      : "Ej. Embajadores, Justicia, Pacífico...";
   }
-
-  function getLocationLabel(item) {
-    const zone = zoneSelect.value;
-    const town = townSelect.value;
-    if (zone === "__all") return "Comunidad de Madrid";
-    if (town && town === item.municipality) return "En tu municipio";
-    if (zone && zone === item.zone) return "En tu zona";
-    return "Otra zona";
-  }
-
   function scoreLocation(item) {
-    const zone = zoneSelect.value;
-    const town = townSelect.value;
-    if (zone === "__all") return 3;
-    if (town && town === item.municipality) return 0;
-    if (zone && item.zone === zone) return 1;
-    return 2;
+    const district = zoneSelect.value;
+    const neighbourhood = normalize(townSelect.value);
+    if (!district || district === "__all") return 3;
+    if (item.zone === district) {
+      if (neighbourhood && item.area && normalize(item.area).includes(neighbourhood)) return 0;
+      return 1;
+    }
+    if ((adjacency[district] || []).includes(item.zone)) return 2;
+    return 3;
   }
-
+  function getLocationLabel(item) {
+    const score = scoreLocation(item);
+    if (score === 0) return "En tu barrio";
+    if (score === 1) return "En tu distrito";
+    if (score === 2) return "Distrito colindante";
+    return "Otro distrito de Madrid";
+  }
+  function mapUrl(item) {
+    const query = item.mapsQuery || item.address;
+    if (!query) return "";
+    return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(query);
+  }
   function getEntries() {
     let list = data.slice();
     if (category !== "all") list = list.filter(function (item) { return item.category === category; });
-    if (zoneSelect.value && zoneSelect.value !== "__all") {
-      list = list.filter(function (item) { return item.zone === zoneSelect.value; });
-    }
     list.sort(function (a, b) {
       if (sortMode === "free") {
         const priceRank = function (item) {
@@ -99,30 +86,22 @@
     });
     return list;
   }
-
-  function mapUrl(item) {
-    const query = typeof item.mapsQuery === "string" ? item.mapsQuery : item.address;
-    if (!query) return "";
-    return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(query);
-  }
-
   function renderCard(item) {
     const saved = selected.has(item.id);
-    const locationLabel = getLocationLabel(item);
-    const isOther = locationLabel === "Otra zona";
+    const locality = getLocationLabel(item);
+    const isOther = locality === "Otro distrito de Madrid";
     const priceClass = item.priceType === "free" ? " free" : "";
-    const addressText = item.address || "Consulta la ubicación de cada evento";
     const map = mapUrl(item);
     return [
       '<article class="resource-card">',
         '<div class="card-topline"><span class="card-category">', escapeHtml(categoryNames[item.category] || item.category), '</span>',
-          '<span class="location-tag', isOther ? ' is-other' : '', '">', escapeHtml(locationLabel), '</span></div>',
+          '<span class="location-tag', isOther ? ' is-other' : '', '">', escapeHtml(locality), '</span></div>',
         '<h3>', escapeHtml(item.title), '</h3>',
-        '<p class="card-place">', escapeHtml(item.municipality), ' · ', escapeHtml(item.zone), '</p>',
+        '<p class="card-place">', escapeHtml(item.area ? item.area + " · " : ""), 'Distrito ', escapeHtml(item.zone), '</p>',
         '<p class="card-summary">', escapeHtml(item.summary), '</p>',
         '<div class="card-activity"><strong>Qué puedes encontrar</strong>', escapeHtml(item.offer), '</div>',
         '<dl class="card-facts">',
-          '<div class="card-fact"><dt>Dirección</dt><dd>', escapeHtml(addressText), '</dd></div>',
+          '<div class="card-fact"><dt>Dirección</dt><dd>', escapeHtml(item.address), '</dd></div>',
           '<div class="card-fact"><dt>Acceso</dt><dd>', escapeHtml(item.access), '</dd></div>',
           '<div class="card-fact"><dt>Edad</dt><dd>', escapeHtml(item.age), '</dd></div>',
         '</dl>',
@@ -136,17 +115,21 @@
       '</article>'
     ].join("");
   }
-
   function renderResults() {
     if (!hasSearched) return;
     resultsArea.hidden = false;
     firstSearchHint.hidden = true;
-    const zone = zoneSelect.value;
-    const town = townSelect.value;
+    const district = zoneSelect.value;
+    const neighbourhood = townSelect.value.trim();
     const list = getEntries();
-    const zoneLabel = zone === "__all" ? "la Comunidad de Madrid" : (town ? town : zone);
-    resultsTitle.textContent = category === "all" ? "Opciones para explorar" : categoryNames[category] + " para explorar";
-    resultsDescription.textContent = "Selección para " + zoneLabel + ". Las opciones de tu municipio o zona aparecen primero.";
+    const isAll = district === "__all";
+    resultsTitle.textContent = category === "all" ? "Opciones para explorar en Madrid" : categoryNames[category] + " en Madrid";
+    if (isAll) {
+      resultsDescription.textContent = "Todas las fichas de Madrid capital, agrupadas por categoría y ordenadas por distrito.";
+    } else {
+      resultsDescription.textContent = (neighbourhood ? "Referencia: " + neighbourhood + " · " : "") +
+        "Primero tu distrito (" + district + "), después los distritos colindantes y, por último, otras zonas de Madrid capital. No calculamos distancias exactas.";
+    }
     resultCount.textContent = list.length + (list.length === 1 ? " opción" : " opciones");
     resourceGrid.innerHTML = "";
     emptyState.hidden = list.length > 0;
@@ -154,7 +137,6 @@
     if (list.length) resourceGrid.innerHTML = list.map(renderCard).join("");
     renderSelection();
   }
-
   function renderSelection() {
     const items = data.filter(function (item) { return selected.has(item.id); });
     selectionCount.textContent = items.length + (items.length === 1 ? " actividad guardada" : " actividades guardadas");
@@ -163,10 +145,9 @@
       return;
     }
     selectionList.innerHTML = items.map(function (item) {
-      return '<li>' + escapeHtml(item.title) + ' · ' + escapeHtml(item.municipality) + '</li>';
+      return '<li>' + escapeHtml(item.title) + ' · ' + escapeHtml(item.area ? item.area + ", " : "") + escapeHtml(item.zone) + '</li>';
     }).join("");
   }
-
   function setCategory(nextCategory) {
     category = nextCategory;
     document.querySelectorAll("[data-category]").forEach(function (button) {
@@ -176,7 +157,6 @@
     });
     renderResults();
   }
-
   function getRequestText() {
     const savedItems = data.filter(function (item) { return selected.has(item.id); });
     const name = document.getElementById("contactName").value.trim();
@@ -184,20 +164,17 @@
     const lines = [
       "Consulta desde la web PUENTES",
       name ? "Nombre: " + name : "",
-      "Zona seleccionada: " + (zoneSelect.value === "__all" ? "Toda la Comunidad de Madrid" : (zoneSelect.value || "No seleccionada")),
-      townSelect.value ? "Municipio: " + townSelect.value : "",
+      "Distrito seleccionado: " + (zoneSelect.value === "__all" ? "Toda Madrid capital" : (zoneSelect.value || "No seleccionado")),
+      townSelect.value.trim() ? "Barrio de referencia: " + townSelect.value.trim() : "",
       "",
       "Actividades que me interesan:",
-      savedItems.length ? savedItems.map(function (item) { return "- " + item.title + " (" + item.municipality + ") — " + item.officialUrl; }).join("\n") : "- Todavía no he guardado ninguna actividad.",
+      savedItems.length ? savedItems.map(function (item) { return "- " + item.title + " (" + item.area + ", distrito " + item.zone + ") — " + item.officialUrl; }).join("\n") : "- Todavía no he guardado ninguna actividad.",
       "",
       "¿En qué me gustaría recibir ayuda?",
       message || "Me gustaría recibir información sobre cómo participar."
     ];
-    return lines.filter(function (line, index) {
-      return !(line === "" && lines[index - 1] === "");
-    }).join("\n");
+    return lines.filter(function (line, index) { return !(line === "" && lines[index - 1] === ""); }).join("\n");
   }
-
   function fallbackCopy(text) {
     const area = document.createElement("textarea");
     area.value = text;
@@ -216,15 +193,13 @@
     updateTownOptions();
     if (hasSearched && zoneSelect.value) renderResults();
   });
-
-  townSelect.addEventListener("change", function () {
+  townSelect.addEventListener("input", function () {
     if (hasSearched) renderResults();
   });
-
   searchForm.addEventListener("submit", function (event) {
     event.preventDefault();
     if (!zoneSelect.value) {
-      showToast("Selecciona primero una zona de Madrid.");
+      showToast("Selecciona primero un distrito de Madrid.");
       zoneSelect.focus();
       return;
     }
@@ -233,24 +208,18 @@
     renderResults();
     resultsArea.scrollIntoView({ behavior: "smooth", block: "start" });
   });
-
   document.querySelectorAll("[data-category]").forEach(function (button) {
-    button.addEventListener("click", function () {
-      setCategory(button.getAttribute("data-category"));
-    });
+    button.addEventListener("click", function () { setCategory(button.getAttribute("data-category")); });
   });
-
   document.getElementById("sortSelect").addEventListener("change", function (event) {
     sortMode = event.target.value;
     renderResults();
   });
-
   document.getElementById("resetFilters").addEventListener("click", function () {
     sortMode = "local";
     document.getElementById("sortSelect").value = "local";
     setCategory("all");
   });
-
   document.getElementById("showAllResources").addEventListener("click", function () {
     zoneSelect.value = "__all";
     updateTownOptions();
@@ -258,7 +227,6 @@
     renderResults();
     resultsArea.scrollIntoView({ behavior: "smooth", block: "start" });
   });
-
   resourceGrid.addEventListener("click", function (event) {
     const button = event.target.closest("[data-save]");
     if (!button) return;
@@ -273,7 +241,6 @@
     renderResults();
     renderSelection();
   });
-
   document.getElementById("contactForm").addEventListener("submit", function (event) {
     event.preventDefault();
     const email = String(config.contactEmail || "").trim();
@@ -286,7 +253,6 @@
     const body = encodeURIComponent(getRequestText());
     window.location.href = "mailto:" + encodeURIComponent(email) + "?subject=" + subject + "&body=" + body;
   });
-
   document.getElementById("copyRequest").addEventListener("click", async function () {
     const text = getRequestText();
     let copied = false;
