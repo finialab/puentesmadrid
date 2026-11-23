@@ -167,7 +167,7 @@
     const name = document.getElementById("contactName").value.trim();
     const message = document.getElementById("contactMessage").value.trim();
     const lines = [
-      "Consulta desde la web PUENTES",
+      "Consulta desde la web FINDIA PUENTES",
       name ? "Nombre: " + name : "",
       "Distrito seleccionado: " + (zoneSelect.value === "__all" ? "Toda Madrid capital" : (zoneSelect.value || "No seleccionado")),
       townSelect.value.trim() ? "Barrio de referencia: " + townSelect.value.trim() : "",
