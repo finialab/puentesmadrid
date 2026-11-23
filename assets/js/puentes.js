@@ -58,6 +58,7 @@
     return 3;
   }
   function getLocationLabel(item) {
+    if (zoneSelect.value === "__all") return "Madrid capital";
     const score = scoreLocation(item);
     if (score === 0) return "En tu barrio";
     if (score === 1) return "En tu distrito";
@@ -127,8 +128,12 @@
     if (isAll) {
       resultsDescription.textContent = "Todas las fichas de Madrid capital, agrupadas por categoría y ordenadas por distrito.";
     } else {
+      const nearbyCount = list.filter(function (item) { return scoreLocation(item) <= 2; }).length;
       resultsDescription.textContent = (neighbourhood ? "Referencia: " + neighbourhood + " · " : "") +
-        "Primero tu distrito (" + district + "), después los distritos colindantes y, por último, otras zonas de Madrid capital. No calculamos distancias exactas.";
+        (nearbyCount > 0
+          ? "Primero tu distrito (" + district + "), después los distritos colindantes y, por último, otras zonas de Madrid capital."
+          : "Aún no tenemos fichas en " + district + " ni en sus distritos colindantes para esta selección. Mostramos otras opciones del municipio de Madrid.") +
+        " No calculamos distancias exactas.";
     }
     resultCount.textContent = list.length + (list.length === 1 ? " opción" : " opciones");
     resourceGrid.innerHTML = "";
