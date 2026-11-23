@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#173f39">
   <title>PUENTES | Actividades y nuevas conexiones en Madrid</title>
-  <meta name="description" content="Encuentra actividades culturales, deportivas y musicales en la Comunidad de Madrid. Elige tu zona y descubre recursos oficiales con acompañamiento cercano de PUENTES.">
+  <meta name="description" content="Encuentra actividades culturales, deportivas y musicales en Madrid capital. Elige tu distrito y descubre recursos municipales con acompañamiento cercano de PUENTES.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://findialab.me/">
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
@@ -27,7 +27,7 @@
             <circle cx="24" cy="7" r="3" fill="#e5b75e"/>
           </svg>
         </span>
-        <span class="brand-name">PUENTES<span class="brand-sub">Madrid · Comunidad</span></span>
+        <span class="brand-name">PUENTES<span class="brand-sub">Madrid capital</span></span>
       </a>
       <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="mainNav" aria-label="Abrir menú">☰</button>
       <nav class="main-nav" id="mainNav" aria-label="Navegación principal">
@@ -83,35 +83,47 @@
         <div class="section-heading section-heading-center">
           <p class="eyebrow"><span class="eyebrow-dot"></span> Empieza por tu zona</p>
           <h2>¿Dónde te mueves?</h2>
-          <p>Selecciona la zona donde vives, estudias o pasas más tiempo. Te mostraremos primero los recursos de ese entorno.</p>
+          <p>Selecciona el distrito de Madrid donde vives, estudias o pasas más tiempo. Priorizaremos los recursos de tu distrito y de los distritos colindantes.</p>
         </div>
 
         <div class="finder-panel">
           <div class="finder-step"><span class="step-number">01</span><span>Tu zona</span></div>
           <form id="searchForm" class="finder-form">
             <div class="field-group">
-              <label for="zoneSelect">Zona de Madrid</label>
+              <label for="zoneSelect">Distrito de Madrid</label>
               <select id="zoneSelect" name="zone" required>
-                <option value="">Selecciona una zona</option>
-                <option value="Madrid capital">Madrid capital</option>
-                <option value="Corredor del Henares">Corredor del Henares</option>
-                <option value="Sur metropolitano">Sur metropolitano</option>
-                <option value="Noroeste">Noroeste</option>
-                <option value="Sierra Norte">Sierra Norte</option>
-                <option value="Sierra Oeste">Sierra Oeste</option>
-                <option value="Sureste y Vegas">Sureste y Vegas</option>
-                <option value="__all">Toda la Comunidad de Madrid</option>
+                <option value="">Selecciona un distrito</option>
+                <option value="Arganzuela">Arganzuela</option>
+                <option value="Barajas">Barajas</option>
+                <option value="Carabanchel">Carabanchel</option>
+                <option value="Centro">Centro</option>
+                <option value="Chamartín">Chamartín</option>
+                <option value="Chamberí">Chamberí</option>
+                <option value="Ciudad Lineal">Ciudad Lineal</option>
+                <option value="Fuencarral-El Pardo">Fuencarral-El Pardo</option>
+                <option value="Hortaleza">Hortaleza</option>
+                <option value="Latina">Latina</option>
+                <option value="Moncloa-Aravaca">Moncloa-Aravaca</option>
+                <option value="Moratalaz">Moratalaz</option>
+                <option value="Puente de Vallecas">Puente de Vallecas</option>
+                <option value="Retiro">Retiro</option>
+                <option value="Salamanca">Salamanca</option>
+                <option value="San Blas-Canillejas">San Blas-Canillejas</option>
+                <option value="Tetuán">Tetuán</option>
+                <option value="Usera">Usera</option>
+                <option value="Vicálvaro">Vicálvaro</option>
+                <option value="Villa de Vallecas">Villa de Vallecas</option>
+                <option value="Villaverde">Villaverde</option>
+                <option value="__all">Toda Madrid capital</option>
               </select>
             </div>
             <div class="field-group">
-              <label for="townSelect">Municipio <span class="optional-label">opcional</span></label>
-              <select id="townSelect" name="town" disabled>
-                <option value="">Primero selecciona una zona</option>
-              </select>
+              <label for="townSelect">Barrio <span class="optional-label">opcional</span></label>
+              <input id="townSelect" name="town" type="text" maxlength="60" placeholder="Selecciona primero un distrito" disabled autocomplete="off">
             </div>
             <button class="button button-primary finder-submit" type="submit">Ver actividades <span aria-hidden="true">→</span></button>
           </form>
-          <p class="finder-privacy"><span aria-hidden="true">⌖</span> No pedimos tu dirección ni usamos GPS. Ordenamos por municipio y zona, no por kilómetros exactos.</p>
+          <p class="finder-privacy"><span aria-hidden="true">⌖</span> No pedimos tu dirección exacta ni usamos GPS. Priorizamos tu distrito y los distritos colindantes; no calculamos kilómetros.</p>
         </div>
 
         <div class="results-area" id="resultsArea" hidden>
@@ -147,8 +159,8 @@
           <div class="empty-state" id="emptyState" hidden>
             <div class="empty-icon" aria-hidden="true">⌕</div>
             <h3>Todavía no tenemos una ficha de esta categoría en tu zona.</h3>
-            <p>El catálogo inicial es intencionadamente reducido. Puedes consultar opciones de toda la Comunidad o escribirnos para que busquemos contigo una alternativa más adecuada.</p>
-            <button class="button button-outline" id="showAllResources" type="button">Ver toda la Comunidad</button>
+            <p>El catálogo inicial es intencionadamente reducido. Puedes consultar todas las fichas de Madrid capital o escribirnos para que busquemos contigo una alternativa más adecuada.</p>
+            <button class="button button-outline" id="showAllResources" type="button">Ver todas las opciones de Madrid capital</button>
             <a class="text-link" href="#contacto">Pedir ayuda para buscar <span aria-hidden="true">↗</span></a>
           </div>
 
@@ -160,7 +172,7 @@
 
         <div class="first-search-hint" id="firstSearchHint">
           <div class="hint-icon" aria-hidden="true">↳</div>
-          <p>Elige tu zona para ver una selección de recursos culturales, deportivos y musicales.</p>
+          <p>Elige tu distrito y, si quieres, escribe tu barrio para priorizar los recursos de tu entorno.</p>
         </div>
       </div>
     </section>
@@ -177,7 +189,7 @@
             <div class="how-number">01</div>
             <div class="how-icon icon-listen" aria-hidden="true">◌</div>
             <h3>Te escuchamos</h3>
-            <p>Nos cuentas qué te gusta, en qué zona te mueves, qué horarios tienes y qué tipo de actividad te apetece probar.</p>
+            <p>Nos cuentas qué te gusta, en qué distrito y barrio te mueves, qué horarios tienes y qué tipo de actividad te apetece probar.</p>
           </article>
           <article class="how-card how-card-featured">
             <div class="how-number">02</div>
@@ -201,7 +213,7 @@
           <p class="eyebrow eyebrow-light"><span class="eyebrow-dot"></span> Qué hace diferente a PUENTES</p>
           <h2>Los recursos existen.<br><em>La conexión también importa.</em></h2>
           <p>En Madrid hay centros, asociaciones y actividades. Pero conocer un recurso no siempre significa saber cómo llegar, inscribirse o sentirse cómodo al participar.</p>
-          <p><strong>El proyecto se dirige especialmente a jóvenes migrantes de 18 a 24 años que viven en la Comunidad de Madrid.</strong> El catálogo puede explorarlo cualquier persona, pero la intervención piloto se plantea para participantes de ese perfil que quieran sumarse voluntariamente.</p>
+          <p><strong>El proyecto se dirige especialmente a jóvenes migrantes de 18 a 24 años que viven en Madrid capital.</strong> El catálogo puede explorarlo cualquier persona, pero la intervención piloto se plantea para participantes de ese perfil que quieran sumarse voluntariamente.</p>
           <p>PUENTES quiere reducir esa distancia con una orientación cercana y adaptada a cada persona. No creamos actividades para sustituir a las entidades: ayudamos a conectar a las personas con las oportunidades que ya existen.</p>
           <a class="button button-gold" href="#buscar">Explorar recursos <span aria-hidden="true">↗</span></a>
         </div>
@@ -274,9 +286,9 @@
           <h2>Información clara. Fuentes a la vista.</h2>
         </div>
         <div class="trust-copy">
-          <p>Las fichas de esta primera selección se han elaborado a partir de páginas de ayuntamientos y de la Comunidad de Madrid. En cada recurso encontrarás un enlace a la fuente oficial, su ubicación y las indicaciones de acceso que hemos podido comprobar.</p>
+          <p>Las fichas de esta primera selección se han elaborado a partir de páginas y directorios oficiales del Ayuntamiento de Madrid. En cada recurso encontrarás un enlace a la fuente oficial, su ubicación y las indicaciones de acceso que hemos podido comprobar.</p>
           <p><strong>Última revisión de esta selección: 23 de noviembre de 2026.</strong> Los horarios, precios, inscripciones y plazas pueden modificarse. La fuente oficial del centro prevalece siempre sobre esta ficha.</p>
-          <p>No presentamos este catálogo como completo ni como garantía de plazas disponibles. Si no encuentras una opción en tu municipio, puedes consultarnos para estudiar alternativas.</p>
+          <p>El catálogo contiene una selección inicial de recursos municipales de varios distritos; no cubre todos los centros de Madrid ni garantiza plazas disponibles. Si no encuentras una opción en tu distrito, te mostraremos alternativas de distritos próximos.</p>
         </div>
       </div>
     </section>
