@@ -145,18 +145,18 @@ window.PUENTES_ACTIVITIES = [
   },
 
   {
-    id:"musica-pacorabal", category:"musica", title:"Música en el Centro Cultural Paco Rabal",
+    id:"musica-rio-esmeralda", category:"musica", title:"Estudio de Grabación Río Esmeralda",
     municipality:"Madrid", zone:"Madrid capital", area:"Madrid capital",
-    address:"C/ Felipe de Diego, 13, 28018 Madrid",
-    summary:"Un espacio cultural de Vallecas con talleres y programación relacionada con la música.",
-    offer:"La información oficial del centro incluye talleres de música moderna, guitarra clásica y acústica, y música y movimiento. Consulta la próxima convocatoria.",
-    access:"La inscripción funciona por convocatorias y puede haber límite de plazas. Pregunta por próximas fechas y grupos.",
-    price:"Consultar condiciones y precio de la próxima convocatoria.", priceType:"varies",
-    age:"La edad admitida depende del taller concreto.",
-    officialUrl:"https://www.comunidad.madrid/centros/centro-cultural-paco-rabal",
-    sourceName:"Comunidad de Madrid · Centro Cultural Paco Rabal", mapsQuery:"Centro Cultural Paco Rabal Madrid",
-    note:"La existencia de un taller en la ficha no implica que haya matrícula abierta actualmente."
-  },
+    address:"Calle Río Esmeralda, 15, 28018 Madrid",
+    summary:"Espacio municipal de Puente de Vallecas para aprender, crear y desarrollar proyectos musicales y sonoros.",
+    offer:"La información municipal incluye talleres de producción de sonido, clases de piano y batería, asesoría y grabación de sonido.",
+    access:"La ficha municipal indica inscripción mediante formulario en línea y confirmación de plaza por correo o teléfono. Comprueba que la convocatoria esté abierta.",
+    price:"Gratuito; requisito publicado: estar empadronado/a en el distrito de Puente de Vallecas.", priceType:"free",
+    age:"El centro ofrece programación para población juvenil, adulta y mayor; confirma las condiciones de edad de cada actividad musical.",
+    officialUrl:"https://www.madrid.es/portales/munimadrid/es/Inicio/El-Ayuntamiento/San-Blas-Canillejas/Actividades-y-eventos/Actividades-en-el-Centro-Intergeneracional-Rio-Esmeralda/?vgnextchannel=3ef6d47ffee28010VgnVCM100000dc0ca8c0RCRD&vgnextfmt=default&vgnextoid=209713a27b142910VgnVCM2000001f4a900aRCRD",
+    sourceName:"Ayuntamiento de Madrid · Centro Intergeneracional Río Esmeralda", mapsQuery:"Centro Intergeneracional Río Esmeralda Madrid",
+    note:"La gratuidad está sujeta al empadronamiento en Puente de Vallecas. Confirma la convocatoria y las plazas antes de acudir."
+  }
   {
     id:"musica-cchsn", category:"musica", title:"Música y conciertos en Sierra Norte",
     municipality:"La Cabrera", zone:"Sierra Norte", area:"Sierra Norte",
