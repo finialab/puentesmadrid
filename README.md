@@ -1,8 +1,8 @@
-# PUENTES
+# FINDIA PUENTES
 
-Web estática del proyecto PUENTES para descubrir actividades culturales, deportivas y musicales en Madrid capital y facilitar el acompañamiento a jóvenes de 18 a 24 años.
+Web estática del proyecto FINDIA PUENTES para descubrir actividades culturales, deportivas y musicales en Madrid capital y facilitar el acompañamiento a jóvenes de 18 a 24 años.
 
-El sitio está publicado actualmente en el dominio personalizado `findialab.me`. El nombre público del proyecto y de la web es **PUENTES**.
+El sitio está publicado actualmente en el dominio personalizado `findialab.me`. El nombre público del proyecto y de la web es **FINDIA PUENTES**.
 
 ## Estructura
 - `index.html`: portada, buscador y explicación del proyecto.
@@ -24,4 +24,4 @@ Cada ficha enlaza a la fuente oficial del Ayuntamiento de Madrid. Comprobar hora
 ## Alcance y privacidad
 El catálogo contiene 15 fichas seleccionadas de Madrid capital (cinco de cultura, cinco de deporte y cinco de música); no es un directorio exhaustivo ni garantiza plazas. El buscador permite elegir entre los 21 distritos y prioriza los distritos próximos.
 
-La web no solicita dirección exacta, no usa GPS, no incorpora analítica ni almacena la lista de actividades. PUENTES se presenta como una iniciativa universitaria en desarrollo y no afirma colaboraciones que todavía no estén confirmadas.
+La web no solicita dirección exacta, no usa GPS, no incorpora analítica ni almacena la lista de actividades. FINDIA PUENTES se presenta como una iniciativa universitaria en desarrollo y no afirma colaboraciones que todavía no estén confirmadas.
