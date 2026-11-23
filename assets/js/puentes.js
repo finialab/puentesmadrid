@@ -101,7 +101,7 @@
   }
 
   function mapUrl(item) {
-    const query = item.mapsQuery || item.address;
+    const query = typeof item.mapsQuery === "string" ? item.mapsQuery : item.address;
     if (!query) return "";
     return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(query);
   }
