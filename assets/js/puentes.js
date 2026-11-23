@@ -62,7 +62,7 @@
     const score = scoreLocation(item);
     if (score === 0) return "En tu barrio";
     if (score === 1) return "En tu distrito";
-    if (score === 2) return "Distrito colindante";
+    if (score === 2) return "Distrito próximo";
     return "Otro distrito de Madrid";
   }
   function mapUrl(item) {
@@ -131,8 +131,8 @@
       const nearbyCount = list.filter(function (item) { return scoreLocation(item) <= 2; }).length;
       resultsDescription.textContent = (neighbourhood ? "Referencia: " + neighbourhood + " · " : "") +
         (nearbyCount > 0
-          ? "Primero tu distrito (" + district + "), después los distritos colindantes y, por último, otras zonas de Madrid capital."
-          : "Aún no tenemos fichas en " + district + " ni en sus distritos colindantes para esta selección. Mostramos otras opciones del municipio de Madrid.") +
+          ? "Primero tu distrito (" + district + "), después los distritos próximos y, por último, otras zonas de Madrid capital."
+          : "Aún no tenemos fichas en " + district + " ni en sus distritos próximos para esta selección. Mostramos otras opciones del municipio de Madrid.") +
         " No calculamos distancias exactas.";
     }
     resultCount.textContent = list.length + (list.length === 1 ? " opción" : " opciones");
