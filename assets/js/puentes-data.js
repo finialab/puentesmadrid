@@ -1,8 +1,8 @@
-/* Catálogo PUENTES: recursos seleccionados dentro del municipio de Madrid.
+/* Catálogo FINDIA PUENTES: recursos seleccionados dentro del municipio de Madrid.
    Fuentes municipales oficiales. Revisión: 23/11/2026.
    La selección no es un directorio exhaustivo ni garantiza plazas. */
 window.PUENTES_CONFIG = {
-  contactEmail: "", // AÑADIR AQUÍ EL CORREO DE CONTACTO DE PUENTES
+  contactEmail: "", // AÑADIR AQUÍ EL CORREO DE CONTACTO DE FINDIA PUENTES
   verifiedOn: "23/11/2026"
 };
 
