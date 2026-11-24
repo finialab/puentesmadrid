@@ -20,7 +20,7 @@ El formulario envía sus datos mediante un POST HTML nativo a una aplicación we
 5. Comprobar que esa URL aparece en submissionEndpoint dentro de assets/js/puentes-data.js y en el atributo action del formulario de mi-lista.html. El destinatario por defecto es contacto@findialab.me.
 6. Cada vez que se cambie Code.gs, abrir Deploy → Manage deployments → Edit → New version → Deploy. Guardar el código en el editor no actualiza por sí solo la versión publicada.
 
-El botón utiliza el POST nativo del navegador; no depende de AJAX, de una clave Turnstile ni de un servicio de terceros. El formulario también incluye un campo trampa, validación de datos, consentimiento obligatorio, un máximo de 30 correos diarios, una pausa global de ocho segundos y un envío por dirección cada 60 segundos. Si el JavaScript de la página no carga, el servidor construye un mensaje alternativo con los campos rellenados.
+El botón utiliza el POST nativo del navegador; no depende de AJAX, de una clave Turnstile ni de un servicio de terceros. El formulario también incluye un campo trampa, validación de datos, una casilla obligatoria de aceptación del aviso de privacidad y las condiciones de uso, un máximo de 30 correos diarios, una pausa global de ocho segundos y un envío por dirección cada 60 segundos. Si el JavaScript de la página no carga, el servidor construye un mensaje alternativo con los campos rellenados.
 
 Para una prueba de entrega independiente, ejecutar manualmente testMailDelivery desde el editor; envía un único correo de prueba al destinatario actual. Si se prefiere entregar directamente a otro buzón y evitar el alias/reenvío del dominio, añadir la propiedad privada MAIL_RECIPIENT en Script Properties. No guardar direcciones personales ni secretos en el repositorio.
 
