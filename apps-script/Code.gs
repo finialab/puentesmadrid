@@ -97,7 +97,7 @@ function testMailDelivery() {
     name: "FINDIA PUENTES"
   });
 
-  console.log("TEST_MAIL_SENT recipient=" + recipient + " remainingQuota=" + (quota - 1));
+  console.log("TEST_MAIL_SENT remainingQuota=" + (quota - 1));
   return "MailApp ha aceptado el correo de prueba para " + recipient +
     ". Comprueba la bandeja de entrada y Spam.";
 }
@@ -119,6 +119,13 @@ function doPost(e) {
 
     stage = "lectura de campos";
     const p = (e && e.parameter) ? e.parameter : {};
+    const parameterNames = Object.keys(p);
+    const postType = e && e.postData ? String(e.postData.type || "") : "sin postData";
+    const tokenFromEvent = readParameter_(e, "cf-turnstile-response");
+    console.log("doPost received fields=" + parameterNames.join(",") +
+      "; postType=" + postType +
+      "; tokenPresent=" + Boolean(tokenFromEvent) +
+      "; tokenLength=" + String(tokenFromEvent || "").length);
 
     // Campo trampa para bots. Se responde como recibido, pero no se envía nada.
     if (String(p.website || "").trim()) {
@@ -130,7 +137,7 @@ function doPost(e) {
     }
 
     stage = "validación Turnstile";
-    const token = String(p["cf-turnstile-response"] || "").trim();
+    const token = String(tokenFromEvent || "").trim();
     if (!verifyTurnstile_(token)) {
       console.error("doPost: Turnstile rejected request");
       return renderPage_(
@@ -195,7 +202,7 @@ function doPost(e) {
       replyTo: email
     });
 
-    console.log("doPost: MailApp accepted email; recipient=" + recipient);
+    console.log("doPost: MailApp accepted the request email.");
     stage = "respuesta de confirmación";
 
     return renderPage_(
@@ -246,6 +253,20 @@ function verifyTurnstile_(token) {
     console.error("Turnstile validation failed. No email sent.");
     return false;
   }
+}
+
+/**
+ * Lee un parámetro tanto de e.parameter como de e.parameters.
+ * No registra ni expone el contenido del token.
+ */
+function readParameter_(event, name) {
+  if (!event) return "";
+  const direct = event.parameter ? event.parameter[name] : "";
+  if (direct !== undefined && direct !== null && String(direct) !== "") return direct;
+
+  const multiple = event.parameters ? event.parameters[name] : null;
+  if (Array.isArray(multiple)) return multiple.length ? multiple[0] : "";
+  return multiple == null ? "" : multiple;
 }
 
 function cleanText_(value, maxLength) {
