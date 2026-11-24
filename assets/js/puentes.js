@@ -18,7 +18,7 @@
   const contactStatus = document.getElementById("contactStatus");
   const toast = document.getElementById("toast");
   let category = "all";
-  let sortMode = "local";
+  let sortMode = "cost";
   let hasSearched = false;
   const selected = new Set();
   let toastTimer = null;
@@ -74,24 +74,26 @@
     let list = data.slice();
     if (category !== "all") list = list.filter(function (item) { return item.category === category; });
     list.sort(function (a, b) {
-      if (sortMode === "free") {
-        const priceRank = function (item) {
-          if (item.priceType === "free") return 0;
-          if (item.priceType === "published") return 1;
-          return 2;
+      if (sortMode === "cost") {
+        const rank = function (item) {
+          return Number.isFinite(Number(item.priceRank)) ? Number(item.priceRank) : 9;
         };
-        const diff = priceRank(a) - priceRank(b);
+        const diff = rank(a) - rank(b);
         if (diff !== 0) return diff;
       }
       return scoreLocation(a) - scoreLocation(b) || a.title.localeCompare(b.title, "es");
     });
     return list;
   }
+  function priceBadge(item) {
+    const labels = { free: "Gratis", freeOrVaries: "Hay opciones gratuitas", low: "Coste bajo publicado", medium: "Coste medio publicado", high: "Coste alto", varies: "Precio por confirmar", unknown: "Precio no publicado" };
+    return labels[item.priceType] || "Precio por confirmar";
+  }
   function renderCard(item) {
     const saved = selected.has(item.id);
     const locality = getLocationLabel(item);
     const isOther = locality === "Otro distrito de Madrid";
-    const priceClass = item.priceType === "free" ? " free" : "";
+    const priceClass = item.priceType === "free" || item.priceType === "freeOrVaries" ? " free" : "";
     const map = mapUrl(item);
     return [
       '<article class="resource-card">',
@@ -106,13 +108,19 @@
           '<div class="card-fact"><dt>Acceso</dt><dd>', escapeHtml(item.access), '</dd></div>',
           '<div class="card-fact"><dt>Edad</dt><dd>', escapeHtml(item.age), '</dd></div>',
         '</dl>',
-        '<span class="price-pill', priceClass, '">', item.priceType === "free" ? '✓ ' : '', escapeHtml(item.price), '</span>',
+        '<div class="cost-panel">',
+          '<div class="cost-panel-head"><strong>Coste orientativo</strong><span class="price-pill', priceClass, '">', escapeHtml(priceBadge(item)), '</span></div>',
+          '<p class="cost-main">', escapeHtml(item.price || "Consultar con la entidad."), '</p>',
+          item.priceDetail ? '<p class="cost-detail">' + escapeHtml(item.priceDetail) + '</p>' : '',
+          item.extraCosts ? '<p class="cost-extras"><strong>Comprueba también:</strong> ' + escapeHtml(item.extraCosts) + '</p>' : '',
+          item.priceSourceUrl ? '<a class="cost-source" href="' + escapeHtml(item.priceSourceUrl) + '" target="_blank" rel="noopener noreferrer">Consultar tarifas oficiales ↗</a>' : '',
+        '</div>',
         '<div class="card-actions">',
           '<a class="card-action" href="', escapeHtml(item.officialUrl), '" target="_blank" rel="noopener noreferrer">Fuente oficial ↗</a>',
           map ? '<a class="card-action" href="' + escapeHtml(map) + '" target="_blank" rel="noopener noreferrer">Ver mapa ↗</a>' : '',
-          '<button class="card-action card-action-save', saved ? ' is-saved' : '', '" type="button" data-save="', escapeHtml(item.id), '" aria-pressed="', saved ? 'true' : 'false', '">', saved ? '✓ Guardada' : '+ Me interesa', '</button>',
+          '<button class="card-action card-action-save', saved ? ' is-saved' : '', '" type="button" data-save="', escapeHtml(item.id), '" aria-pressed="', saved ? 'true' : 'false', '">', saved ? '✓ En mi lista' : '+ Añadir a mi lista', '</button>',
         '</div>',
-        '<p class="card-source">Fuente: ', escapeHtml(item.sourceName), ' · Revisado ', escapeHtml(config.verifiedOn || "23/11/2026"), '</p>',
+        '<p class="card-source">Fuente: ', escapeHtml(item.sourceName), ' · Revisión: ', escapeHtml(config.verifiedOn || "24/11/2026"), '</p>',
       '</article>'
     ].join("");
   }
@@ -144,13 +152,21 @@
   }
   function renderSelection() {
     const items = data.filter(function (item) { return selected.has(item.id); });
-    selectionCount.textContent = items.length + (items.length === 1 ? " actividad guardada" : " actividades guardadas");
+    const countLabel = items.length + (items.length === 1 ? " actividad guardada" : " actividades guardadas");
+    selectionCount.textContent = countLabel;
+    const savedCount = document.getElementById("savedCount");
+    if (savedCount) savedCount.textContent = String(items.length);
     if (!items.length) {
-      selectionList.innerHTML = '<li class="selection-empty">Todavía no has guardado ninguna actividad.</li>';
+      selectionList.innerHTML = '<li class="selection-empty">Todavía no has guardado ninguna actividad. Pulsa «Añadir a mi lista» en las fichas que te interesen.</li>';
       return;
     }
     selectionList.innerHTML = items.map(function (item) {
-      return '<li>' + escapeHtml(item.title) + ' · ' + escapeHtml(item.area ? item.area + ", " : "") + escapeHtml(item.zone) + '</li>';
+      return '<li class="selection-item">' +
+        '<div class="selection-item-copy"><strong>' + escapeHtml(item.title) + '</strong>' +
+        '<span>' + escapeHtml(item.area ? item.area + ", " : "") + escapeHtml(item.zone) + '</span>' +
+        '<small><b>Coste:</b> ' + escapeHtml(item.price || "Consultar con la entidad") + '</small></div>' +
+        '<button type="button" class="selection-remove" data-remove="' + escapeHtml(item.id) + '" aria-label="Quitar ' + escapeHtml(item.title) + ' de mi lista">Quitar</button>' +
+        '</li>';
     }).join("");
   }
   function setCategory(nextCategory) {
@@ -164,19 +180,44 @@
   }
   function getRequestText() {
     const savedItems = data.filter(function (item) { return selected.has(item.id); });
-    const name = document.getElementById("contactName").value.trim();
-    const message = document.getElementById("contactMessage").value.trim();
+    const field = function (id) {
+      const el = document.getElementById(id);
+      return el ? String(el.value || "").trim() : "";
+    };
+    const name = field("contactName");
+    const replyEmail = field("replyEmail");
+    const otherActivity = field("otherActivity");
+    const budget = field("budgetPreference");
+    const knownCost = field("knownCost");
+    const costsToCheck = field("costsToCheck");
+    const message = field("contactMessage");
+    const itemDetails = savedItems.map(function (item, index) {
+      return [
+        (index + 1) + ". " + item.title + " — " + item.area + ", distrito " + item.zone,
+        "   Coste publicado en FINDIA PUENTES: " + (item.price || "No publicado; consultar con la entidad."),
+        item.priceDetail ? "   Condiciones del precio: " + item.priceDetail : "",
+        item.extraCosts ? "   Otros gastos que conviene comprobar: " + item.extraCosts : "",
+        "   Ficha oficial: " + item.officialUrl,
+        item.priceSourceUrl ? "   Tarifas municipales: " + item.priceSourceUrl : ""
+      ].filter(Boolean).join("\n");
+    }).join("\n\n");
     const lines = [
       "Consulta desde la web FINDIA PUENTES",
       name ? "Nombre: " + name : "",
+      replyEmail ? "Correo para responderme: " + replyEmail : "",
       "Distrito seleccionado: " + (zoneSelect.value === "__all" ? "Toda Madrid capital" : (zoneSelect.value || "No seleccionado")),
       townSelect.value.trim() ? "Barrio de referencia: " + townSelect.value.trim() : "",
       "",
-      "Actividades que me interesan:",
-      savedItems.length ? savedItems.map(function (item) { return "- " + item.title + " (" + item.area + ", distrito " + item.zone + ") — " + item.officialUrl; }).join("\n") : "- Todavía no he guardado ninguna actividad.",
+      "Actividades guardadas:",
+      itemDetails || "- No he guardado una ficha concreta.",
+      "",
+      "Otra actividad que me interesa: " + (otherActivity || "No indicada"),
+      "Presupuesto que me encaja: " + (budget || "No indicado"),
+      "Precio que me han comunicado: " + (knownCost || "No indicado"),
+      "Costes que quiero que se comprueben: " + (costsToCheck || "Cuota inicial, periodicidad, material/equipación, licencia o seguro y transporte, si corresponden"),
       "",
       "¿En qué me gustaría recibir ayuda?",
-      message || "Me gustaría recibir información sobre cómo participar."
+      message || "Me gustaría que me orientaseis sobre los siguientes pasos y el coste total antes de apuntarme."
     ];
     return lines.filter(function (line, index) { return !(line === "" && lines[index - 1] === ""); }).join("\n");
   }
@@ -221,8 +262,8 @@
     renderResults();
   });
   document.getElementById("resetFilters").addEventListener("click", function () {
-    sortMode = "local";
-    document.getElementById("sortSelect").value = "local";
+    sortMode = "cost";
+    document.getElementById("sortSelect").value = "cost";
     setCategory("all");
   });
   document.getElementById("showAllResources").addEventListener("click", function () {
@@ -231,6 +272,14 @@
     hasSearched = true;
     renderResults();
     resultsArea.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  selectionList.addEventListener("click", function (event) {
+    const button = event.target.closest("[data-remove]");
+    if (!button) return;
+    selected.delete(button.getAttribute("data-remove"));
+    renderSelection();
+    if (hasSearched) renderResults();
+    showToast("Actividad eliminada de tu lista.");
   });
   resourceGrid.addEventListener("click", function (event) {
     const button = event.target.closest("[data-save]");
@@ -244,17 +293,16 @@
       showToast("Actividad guardada en tu lista.");
     }
     renderResults();
-    renderSelection();
   });
   document.getElementById("contactForm").addEventListener("submit", function (event) {
     event.preventDefault();
     const email = String(config.contactEmail || "").trim();
     if (!email || email.indexOf("@") < 1 || email.indexOf(".") < 0) {
-      contactStatus.textContent = "El correo de PUENTES está pendiente de configurar. Puedes copiar tu consulta y el equipo añadirá aquí su dirección antes de publicar.";
+      contactStatus.textContent = "La dirección del equipo todavía no está configurada. Puedes copiar la consulta; cuando se añada el correo de contacto, este botón abrirá tu aplicación de correo con todos los detalles preparados."
       showToast("Correo de contacto pendiente de configurar.");
       return;
     }
-    const subject = encodeURIComponent("Consulta sobre PUENTES");
+    const subject = encodeURIComponent("Consulta de orientación — FINDIA PUENTES");
     const body = encodeURIComponent(getRequestText());
     window.location.href = "mailto:" + encodeURIComponent(email) + "?subject=" + subject + "&body=" + body;
   });
@@ -276,6 +324,17 @@
       : "No se ha podido copiar automáticamente. Selecciona y copia el texto manualmente.";
     showToast(copied ? "Consulta copiada." : "No se pudo copiar la consulta.");
   });
+
+  const replyEmailField = document.getElementById("replyEmail");
+  if (replyEmailField) {
+    replyEmailField.addEventListener("input", function () {
+      if (replyEmailField.value && !replyEmailField.checkValidity()) {
+        replyEmailField.setCustomValidity("Introduce un correo válido o deja este campo vacío.");
+      } else {
+        replyEmailField.setCustomValidity("");
+      }
+    });
+  }
 
   const menuToggle = document.getElementById("menuToggle");
   const mainNav = document.getElementById("mainNav");
