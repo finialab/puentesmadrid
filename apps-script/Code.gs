@@ -16,7 +16,10 @@ const CONFIG = Object.freeze({
   cooldownSeconds: 60,
   globalCooldownSeconds: 8,
   maxDailySubmissions: 30,
-  maxMessageLength: 12000
+  maxMessageLength: 12000,
+  maxRequestBytes: 18000,
+  allowedHostname: "findialab.me",
+  turnstileAction: "puentes_request"
 });
 
 /**
@@ -24,10 +27,13 @@ const CONFIG = Object.freeze({
  * No envía ningún correo.
  */
 function doGet() {
+  const configured = Boolean(PropertiesService.getScriptProperties().getProperty("TURNSTILE_SECRET"));
   return renderPage_(
-    "Servicio de correo disponible",
-    "El punto de recepción de FINDIA PUENTES está publicado. Para enviar una solicitud, vuelve al formulario de la web.",
-    true
+    configured ? "Servicio de correo protegido" : "Protección pendiente de configurar",
+    configured
+      ? "El servicio de recepción está activo y protegido por verificación antispam."
+      : "Falta configurar la clave privada de Turnstile en las propiedades del proyecto. No se aceptarán solicitudes hasta completar ese paso.",
+    configured
   );
 }
 
@@ -35,9 +41,22 @@ function doGet() {
  * Autoriza el permiso de envío de correo al ejecutar esta función
  * manualmente desde el editor de Apps Script.
  */
-function authorizeMail() {
+function authorizeServices() {
   const remaining = MailApp.getRemainingDailyQuota();
-  Logger.log("Autorización de correo comprobada. Destinatarios disponibles hoy: " + remaining);
+
+  // Solicitud deliberadamente inválida: solo solicita el permiso UrlFetchApp.
+  // No contiene ni utiliza una clave privada real.
+  const check = UrlFetchApp.fetch(
+    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    {
+      method: "post",
+      payload: { secret: "authorization-check", response: "authorization-check" },
+      muteHttpExceptions: true
+    }
+  );
+
+  Logger.log("Permisos de correo y validación externa comprobados. Cuota disponible: " +
+    remaining + ". Respuesta de autorización HTTP: " + check.getResponseCode());
   return remaining;
 }
 
@@ -47,6 +66,10 @@ function authorizeMail() {
  */
 function doPost(e) {
   try {
+    if (e && Number(e.contentLength) > CONFIG.maxRequestBytes) {
+      return renderPage_("Solicitud demasiado grande", "El formulario supera el tamaño permitido. Reduce el texto e inténtalo de nuevo.", false);
+    }
+
     const p = (e && e.parameter) ? e.parameter : {};
 
     // Campo trampa para bots. Se responde como recibido, pero no se envía nada.
@@ -55,6 +78,15 @@ function doPost(e) {
         "Solicitud recibida",
         "Gracias. Puedes volver a FINDIA PUENTES.",
         true
+      );
+    }
+
+    const token = String(p["cf-turnstile-response"] || "").trim();
+    if (!verifyTurnstile_(token)) {
+      return renderPage_(
+        "Verificación de seguridad no válida",
+        "No hemos podido comprobar la verificación antispam. Vuelve al formulario, completa de nuevo la verificación y envía otra vez.",
+        false
       );
     }
 
@@ -119,6 +151,37 @@ function doPost(e) {
       "El servicio de correo no ha podido aceptar la solicitud. No se ha confirmado ningún envío. Vuelve al formulario e inténtalo más tarde.",
       false
     );
+  }
+}
+
+
+/**
+ * Validación obligatoria del token Turnstile en servidor.
+ * La clave privada se guarda solo en Script Properties, nunca en el repositorio.
+ * Se comprueban éxito, hostname y acción esperada.
+ */
+function verifyTurnstile_(token) {
+  const secret = PropertiesService.getScriptProperties().getProperty("TURNSTILE_SECRET");
+  if (!secret || !token || token.length > 2048 || token.length < 10) return false;
+
+  try {
+    const response = UrlFetchApp.fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "post",
+        payload: { secret: secret, response: token },
+        muteHttpExceptions: true
+      }
+    );
+    if (response.getResponseCode() !== 200) return false;
+
+    const result = JSON.parse(response.getContentText());
+    return result.success === true &&
+      result.hostname === CONFIG.allowedHostname &&
+      result.action === CONFIG.turnstileAction;
+  } catch (error) {
+    console.error("Turnstile validation failed. No email sent.");
+    return false;
   }
 }
 
