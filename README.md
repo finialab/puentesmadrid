@@ -19,11 +19,11 @@ El envío no usa FormSubmit. La web estática publica el formulario y envía sus
 4. Pulsar **Deploy → New deployment → Web app**.
 5. Elegir **Execute as: Me** y **Who has access: Anyone**, y publicar.
 6. Copiar la URL de la aplicación web, que termina en `/exec`, y pegarla en `submissionEndpoint` dentro de `assets/js/puentes-data.js`.
-7. Publicar el cambio en `main` y realizar una solicitud de prueba.
+7. Publicar el cambio en `main` y realizar una solicitud de prueba. El endpoint se configura en `assets/js/puentes-data.js`; debe mantenerse la URL `/exec` de la implementación activa.
 
 El destinatario se define en la constante `CONFIG.recipient` de `apps-script/Code.gs`. El valor inicial es `contacto@findialab.me`; si se usa un alias de reenvío de Namecheap, ese servicio seguirá reenviando el mensaje a los buzones configurados. Para evitar ese salto, se puede cambiar el destinatario por el buzón real del equipo directamente dentro del script (sin publicarlo en el repositorio).
 
-La aplicación solo envía a ese destinatario fijo, valida los campos, exige consentimiento, usa un campo trampa antispam y limita envíos repetidos desde una misma dirección. No guarda solicitudes en una base de datos propia. El correo sale desde la cuenta Google propietaria de la aplicación y usa la dirección del visitante como Reply-To. La publicación del backend y la autorización de correo requieren una acción del propietario de esa cuenta; no deben publicarse contraseñas ni claves privadas.
+La aplicación solo envía a ese destinatario fijo, valida los campos, exige consentimiento, usa un campo trampa antispam, aplica una pausa global de ocho segundos, limita cada dirección a un envío por minuto y fija un máximo de 30 envíos diarios. El endpoint público puede ser invocado por terceros; estos límites reducen el abuso, pero no sustituyen un sistema CAPTCHA si aumenta el tráfico. No guarda solicitudes en una base de datos propia. El correo sale desde la cuenta Google propietaria de la aplicación y usa la dirección del visitante como Reply-To. La publicación del backend y la autorización de correo requieren una acción del propietario de esa cuenta; no deben publicarse contraseñas ni claves privadas.
 
 No se incluye IA generativa: el mensaje se redacta mediante una plantilla automática en el navegador.
 ## Precios y ordenación
