@@ -114,16 +114,92 @@
     render();
   });
 
+  let turnstileWidgetId = null;
+  const turnstileStatus = document.getElementById("turnstileStatus");
+  const turnstileContainer = document.getElementById("turnstileWidget");
+
+  function setTurnstileStatus(message, type) {
+    turnstileStatus.textContent = message;
+    turnstileStatus.className = "list-request-status" + (type ? " is-" + type : "");
+  }
+
+  function loadTurnstile() {
+    const siteKey = String(config.turnstileSiteKey || "").trim();
+    sendButton.disabled = true;
+
+    if (!siteKey) {
+      setTurnstileStatus("La protección antispam aún no está configurada. El formulario permanecerá bloqueado hasta activar Turnstile.", "error");
+      sendButton.textContent = "Verificación de seguridad pendiente";
+      return;
+    }
+
+    function renderWidget() {
+      if (!window.turnstile || typeof window.turnstile.render !== "function") {
+        setTurnstileStatus("No se ha podido cargar la verificación. Comprueba tu conexión y recarga la página.", "error");
+        return;
+      }
+      try {
+        turnstileWidgetId = window.turnstile.render(turnstileContainer, {
+          sitekey: siteKey,
+          action: "puentes_request",
+          theme: "light",
+          callback: function (token) {
+            if (!token) return;
+            sendButton.disabled = false;
+            sendButton.textContent = "Enviar solicitud";
+            setTurnstileStatus("Verificación completada. Ya puedes enviar tu solicitud.", "success");
+          },
+          "expired-callback": function () {
+            sendButton.disabled = true;
+            sendButton.textContent = "Completa la verificación para enviar";
+            setTurnstileStatus("La verificación ha caducado. Complétala de nuevo para continuar.", "error");
+          },
+          "error-callback": function () {
+            sendButton.disabled = true;
+            sendButton.textContent = "Verificación no disponible";
+            setTurnstileStatus("No se ha podido verificar el navegador. Recarga la página e inténtalo de nuevo.", "error");
+          }
+        });
+      } catch (error) {
+        sendButton.disabled = true;
+        setTurnstileStatus("No se ha podido iniciar la protección antispam.", "error");
+      }
+    }
+
+    if (window.turnstile && typeof window.turnstile.render === "function") {
+      renderWidget();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+    script.async = true;
+    script.defer = true;
+    script.onload = renderWidget;
+    script.onerror = function () {
+      sendButton.disabled = true;
+      setTurnstileStatus("No se ha podido cargar Cloudflare Turnstile. Comprueba tu conexión e inténtalo más tarde.", "error");
+    };
+    document.head.appendChild(script);
+  }
+
   form.addEventListener("submit", function (event) {
     event.preventDefault();
-
     if (!form.reportValidity()) return;
 
     const endpoint = String(config.submissionEndpoint || "").trim();
     const validEndpoint = /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/.test(endpoint);
+    const token = (window.turnstile && turnstileWidgetId !== null)
+      ? window.turnstile.getResponse(turnstileWidgetId)
+      : "";
 
     if (!validEndpoint) {
-      showStatus("El envío directo por Google todavía no está conectado. No se ha enviado nada. El equipo debe completar la autorización de Google Apps Script.", "error");
+      showStatus("El servicio de envío no está configurado correctamente. No se ha enviado nada.", "error");
+      return;
+    }
+    if (!token) {
+      sendButton.disabled = true;
+      showStatus("Completa la verificación de seguridad antes de enviar.", "error");
       return;
     }
 
@@ -137,9 +213,7 @@
 
     sendButton.disabled = true;
     sendButton.textContent = "Enviando…";
-    showStatus("Enviando tu solicitud directamente mediante el servicio de correo de Google…");
-
-    // Envía el mismo formulario por POST nativo al endpoint autorizado de Apps Script.
+    showStatus("Verificación completada. Enviando tu solicitud…");
     HTMLFormElement.prototype.submit.call(form);
   });
 
@@ -159,4 +233,5 @@
   });
 
   render();
+  loadTurnstile();
 })();
