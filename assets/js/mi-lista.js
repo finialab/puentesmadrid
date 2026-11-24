@@ -60,38 +60,43 @@
       const element = document.getElementById(id);
       return element ? String(element.value || "").trim() : "";
     };
-    const activityLines = items.length ? items.map(function (item, index) {
-      return [
-        (index + 1) + ". " + item.title + " — " + (item.area ? item.area + ", " : "") + "Distrito " + item.zone,
-        "   Coste orientativo publicado: " + (item.price || "No publicado; preguntar a la entidad."),
-        item.priceDetail ? "   Condiciones: " + item.priceDetail : "",
-        item.extraCosts ? "   Gastos adicionales a comprobar: " + item.extraCosts : "",
-        "   Información oficial: " + item.officialUrl,
-        item.priceSourceUrl ? "   Tarifas oficiales: " + item.priceSourceUrl : ""
-      ].filter(Boolean).join("\n");
-    }).join("\n\n") : "No se han guardado actividades concretas; solicita orientación para encontrar opciones.";
-    return [
-      "SOLICITUD DE ORIENTACIÓN — FINDIA PUENTES",
-      "",
-      "DATOS DE CONTACTO",
-      "Nombre: " + field("requestName"),
-      "Correo de respuesta: " + field("requestEmail"),
-      "Zona de referencia: " + (field("requestDistrict") || "No indicada"),
-      "",
-      "PRESUPUESTO Y PREFERENCIAS",
-      "Presupuesto: " + field("requestBudget"),
-      "Actividad adicional que busca: " + (field("requestOtherActivity") || "No indicada"),
-      "Precio que le han comunicado: " + (field("requestKnownCost") || "No indicado"),
-      "Gastos que desea comprobar: " + (field("requestCostsToCheck") || "Cuota inicial/matrícula, periodicidad, equipación/material, licencia/seguro y transporte, si corresponde"),
-      "",
-      "ACTIVIDADES GUARDADAS",
-      activityLines,
-      "",
-      "MENSAJE",
-      field("requestMessage") || "Solicita orientación sobre los siguientes pasos y el coste total antes de inscribirse.",
-      "",
-      "La persona ha solicitado que FINDIA PUENTES le contacte para recibir orientación. Responde directamente a este correo para contestarle."
-    ].join("\n");
+
+    const name = field("requestName");
+    const district = field("requestDistrict");
+    const budget = field("requestBudget");
+    const otherActivity = field("requestOtherActivity");
+    const knownCost = field("requestKnownCost");
+    const costsToCheck = field("requestCostsToCheck");
+    const extraMessage = field("requestMessage");
+
+    const activityText = items.length
+      ? items.map(function (item) {
+          let description = item.title + " (" + (item.area ? item.area + ", " : "") + "distrito de " + item.zone + ").";
+          description += " El coste publicado es: " + (item.price || "está pendiente de confirmar") + ".";
+          if (item.priceDetail) description += " " + item.priceDetail;
+          if (item.extraCosts) description += " También me gustaría comprobar si hay gastos adicionales como " + item.extraCosts.toLowerCase() + ".";
+          description += " La información oficial está disponible en " + item.officialUrl + ".";
+          return description;
+        }).join("\n\n")
+      : "Todavía no he seleccionado una actividad concreta, por lo que agradecería ayuda para encontrar opciones que encajen con mis preferencias.";
+
+    const paragraphs = [
+      "Hola, equipo de FINDIA PUENTES:",
+      "Me llamo " + name + " y me gustaría recibir vuestra ayuda para encontrar una actividad en Madrid en la que pueda participar y conocer gente.",
+      "Mi zona de referencia es " + (district || "Madrid; todavía no tengo una zona concreta") + " y mi presupuesto es " + (budget || "flexible, por determinar") + ".",
+      otherActivity ? "En particular, me interesa: " + otherActivity + "." : "",
+      knownCost ? "Me han indicado este precio: " + knownCost + ". Me gustaría saber si es el coste completo o si hay algún pago adicional." : "",
+      costsToCheck ? "Antes de decidirme, agradecería que me ayudaseis a comprobar estos posibles gastos: " + costsToCheck + "." : "",
+      "He estado mirando vuestra selección y estas son las opciones que me han llamado la atención:",
+      activityText,
+      extraMessage ? "Quería añadir también lo siguiente: " + extraMessage : "",
+      "He leído el aviso de privacidad y acepto que los datos de este formulario se utilicen para gestionar esta solicitud.",
+      "Muchas gracias por vuestro tiempo y por la ayuda. Quedo pendiente de vuestra respuesta.",
+      "Un saludo,",
+      name
+    ];
+
+    return paragraphs.filter(Boolean).join("\n\n");
   }
 
   savedContainer.addEventListener("click", function (event) {
@@ -119,21 +124,16 @@
       return;
     }
 
+    const senderName = document.getElementById("requestName").value.trim();
+    const senderEmail = document.getElementById("requestEmail").value.trim();
     const payload = {
-      name: document.getElementById("requestName").value.trim(),
-      email: document.getElementById("requestEmail").value.trim(),
-      _replyto: document.getElementById("requestEmail").value.trim(),
-      _subject: "Nueva solicitud de orientación — FINDIA PUENTES",
-      _template: "table",
+      name: senderName,
+      email: senderEmail,
+      _replyto: senderEmail,
+      _subject: "Solicitud de orientación de " + senderName + " — FINDIA PUENTES",
       _next: "https://findialab.me/gracias.html",
-      district: document.getElementById("requestDistrict").value.trim() || "No indicado",
-      budget: document.getElementById("requestBudget").value,
-      other_activity: document.getElementById("requestOtherActivity").value.trim() || "No indicada",
-      known_cost: document.getElementById("requestKnownCost").value.trim() || "No indicado",
-      costs_to_check: document.getElementById("requestCostsToCheck").value.trim() || "Cuota inicial/matrícula, periodicidad, equipación/material, licencia/seguro y transporte, si corresponde",
-      saved_activity_count: String(selected.size),
+      _url: "https://findialab.me/mi-lista.html",
       message: buildEmailBody(),
-      consent: "La persona ha marcado la casilla de información y consentimiento del formulario.",
       _honey: document.getElementById("website").value
     };
 
@@ -141,6 +141,7 @@
     outgoingForm.method = "POST";
     outgoingForm.action = "https://formsubmit.co/" + recipient;
     outgoingForm.acceptCharset = "UTF-8";
+    outgoingForm.target = "_self";
     outgoingForm.style.display = "none";
     Object.keys(payload).forEach(function (key) {
       const input = document.createElement("input");
