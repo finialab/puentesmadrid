@@ -115,47 +115,31 @@
   });
 
   form.addEventListener("submit", function (event) {
-    event.preventDefault();
-    if (!form.reportValidity()) return;
+    if (!form.reportValidity()) {
+      event.preventDefault();
+      return;
+    }
 
     const recipient = String(config.contactEmail || "").trim();
     if (!recipient || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient)) {
+      event.preventDefault();
       showStatus("El correo de recepción del equipo no está configurado correctamente. Contacta con FINDIA PUENTES por otro canal.", "error");
       return;
     }
 
     const senderName = document.getElementById("requestName").value.trim();
     const senderEmail = document.getElementById("requestEmail").value.trim();
-    const payload = {
-      name: senderName,
-      email: senderEmail,
-      _replyto: senderEmail,
-      _subject: "Solicitud de orientación de " + senderName + " — FINDIA PUENTES",
-      _next: "https://findialab.me/gracias.html",
-      _url: "https://findialab.me/mi-lista.html",
-      message: buildEmailBody(),
-      _honey: document.getElementById("website").value
-    };
 
-    const outgoingForm = document.createElement("form");
-    outgoingForm.method = "POST";
-    outgoingForm.action = "https://formsubmit.co/" + recipient;
-    outgoingForm.acceptCharset = "UTF-8";
-    outgoingForm.target = "_self";
-    outgoingForm.style.display = "none";
-    Object.keys(payload).forEach(function (key) {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = key;
-      input.value = String(payload[key] == null ? "" : payload[key]);
-      outgoingForm.appendChild(input);
-    });
+    // El formulario HTML real hace el POST; no se crea ni se envía un segundo formulario por JavaScript.
+    form.action = "https://formsubmit.co/" + recipient;
+    document.getElementById("formReplyTo").value = senderEmail;
+    document.getElementById("formSubject").value = "Solicitud de orientación de " + senderName + " — FINDIA PUENTES";
+    document.getElementById("generatedMessage").value = buildEmailBody();
 
     sendButton.disabled = true;
     sendButton.textContent = "Enviando…";
-    showStatus("Enviando tu solicitud. Al terminar, volverás a FINDIA PUENTES con una confirmación.");
-    document.body.appendChild(outgoingForm);
-    outgoingForm.submit();
+    showStatus("Enviando tu solicitud. Si el servicio la acepta, volverás automáticamente a la página de confirmación.");
+    // No se llama a preventDefault(): el navegador envía este formulario mediante POST nativo.
   });
 
   const menuToggle = document.getElementById("menuToggle");
