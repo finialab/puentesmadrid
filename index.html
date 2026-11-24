@@ -9,7 +9,7 @@
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://findialab.me/">
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./assets/css/puentes.css?v=20261124">
+  <link rel="stylesheet" href="./assets/css/puentes.css?v=20261125">
   <meta property="og:type" content="website">
   <meta property="og:title" content="FINDIA PUENTES">
   <meta property="og:description" content="Actividades de cultura, deporte y música en Madrid. Recursos seleccionados y acompañamiento personal.">
@@ -32,7 +32,7 @@
       <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="mainNav" aria-label="Abrir menú">☰</button>
       <nav class="main-nav" id="mainNav" aria-label="Navegación principal">
         <a href="#buscar">Buscar actividades</a>
-        <a href="#mi-lista">Mi lista <span class="nav-count" id="savedCount">0</span></a>
+        <a href="./mi-lista.html">Mi lista <span class="nav-count" id="savedCount">0</span></a>
         <a href="#como-funciona">Cómo funciona</a>
         <a href="#proyecto">El proyecto</a>
         <a href="#contacto">Contacto</a>
@@ -239,20 +239,18 @@
     <section class="selection-section section" id="mi-lista">
       <div class="container selection-grid">
         <div>
-          <p class="eyebrow"><span class="eyebrow-dot"></span> Guarda lo que te interesa</p>
-          <h2>¿Has encontrado algo que te gustaría probar?</h2>
-          <p>Añade las opciones que te interesen y revisa aquí su coste orientativo, ubicación y condiciones. Después podrás preparar un correo con tu selección para pedir ayuda con los siguientes pasos.</p>
+          <p class="eyebrow"><span class="eyebrow-dot"></span> Tus actividades guardadas</p>
+          <h2>Tu lista, en un solo lugar.</h2>
+          <p>Guarda las actividades que te interesan mientras exploras el catálogo. Después podrás revisar los precios y enviar una sola solicitud con tus dudas, presupuesto y datos de contacto.</p>
+          <a class="button button-primary" href="./mi-lista.html">Abrir mi lista <span aria-hidden="true">↗</span></a>
         </div>
         <div class="selection-box">
           <div class="selection-box-top">
             <span class="selection-box-icon" aria-hidden="true">♡</span>
             <div><strong>Mi lista de actividades</strong><span id="selectionCount">0 actividades guardadas</span></div>
           </div>
-          <ul class="selection-list" id="selectionList">
-            <li class="selection-empty">Todavía no has guardado ninguna actividad.</li>
-          </ul>
-          <a class="button button-primary button-block" href="#contacto">Pedir ayuda con mi selección <span aria-hidden="true">↗</span></a>
-          <p class="selection-note">Tu lista permanece únicamente mientras mantengas esta página abierta. No se envía ni se guarda en un servidor. Puedes quitar cualquier actividad antes de preparar tu consulta.</p>
+          <p class="selection-note">La lista se mantiene en esta pestaña del navegador mientras navegas entre la web y tu lista. No necesitas crear una cuenta.</p>
+          <a class="button button-outline button-block" href="./mi-lista.html">Revisar actividades y enviar solicitud</a>
         </div>
       </div>
     </section>
@@ -261,40 +259,17 @@
       <div class="container contact-grid">
         <div class="contact-copy">
           <p class="eyebrow eyebrow-light"><span class="eyebrow-dot"></span> El acompañamiento empieza contigo</p>
-          <h2>No tienes que dar el primer paso a solas.</h2>
-          <p>Cuéntanos qué actividad te interesa o qué tipo de oportunidad estás buscando. La propuesta contempla ayudarte a encontrar una opción adecuada y orientarte sobre cómo contactar con el centro.</p>
-          <div class="contact-assurance"><span aria-hidden="true">✓</span> Participar es voluntario y tú decides qué opción te interesa.</div>
+          <h2>Cuéntanos qué necesitas. Nosotros recibimos tu solicitud.</h2>
+          <p>Selecciona las actividades que te interesan, dinos qué presupuesto tienes y envía el formulario. La solicitud llegará directamente al equipo de FINDIA PUENTES, sin tener que abrir tu aplicación de correo.</p>
+          <div class="contact-assurance"><span aria-hidden="true">✓</span> Podrás responder desde tu propio correo.</div>
           <div class="contact-assurance"><span aria-hidden="true">✓</span> No necesitas compartir tu dirección exacta.</div>
         </div>
-        <form class="contact-card" id="contactForm">
-          <h3>Prepara tu consulta</h3>
-          <p>Al continuar se abrirá tu aplicación de correo con el mensaje preparado. Revísalo y pulsa enviar allí; la web no envía mensajes por su cuenta.</p>
-          <label for="contactName">¿Cómo te llamas? <span class="optional-label">opcional</span></label>
-          <input id="contactName" name="name" type="text" maxlength="80" autocomplete="name" placeholder="Tu nombre">
-          <label for="replyEmail">Tu correo de contacto <span class="optional-label">opcional</span></label>
-          <input id="replyEmail" name="replyEmail" type="email" maxlength="120" autocomplete="email" placeholder="tuemail@ejemplo.com">
-          <label for="otherActivity">¿Buscas una actividad que no aparece en la lista? <span class="optional-label">opcional</span></label>
-          <input id="otherActivity" name="otherActivity" type="text" maxlength="120" placeholder="Ej. un club de fútbol, baloncesto o voluntariado">
-          <label for="budgetPreference">¿Qué presupuesto te encaja?</label>
-          <select id="budgetPreference" name="budgetPreference">
-            <option value="Aún no lo sé; necesito orientación">Aún no lo sé; necesito orientación</option>
-            <option value="Solo opciones gratuitas">Solo opciones gratuitas</option>
-            <option value="Hasta 10 € al mes">Hasta 10 € al mes</option>
-            <option value="Entre 10 y 30 € al mes">Entre 10 y 30 € al mes</option>
-            <option value="Más de 30 € al mes, si merece la pena">Más de 30 € al mes, si merece la pena</option>
-            <option value="Puedo asumir un pago inicial, pero no una cuota alta">Puedo asumir un pago inicial, pero no una cuota alta</option>
-          </select>
-          <label for="knownCost">¿Te han indicado algún precio? <span class="optional-label">opcional</span></label>
-          <input id="knownCost" name="knownCost" type="text" maxlength="180" placeholder="Ej. 25 € de matrícula y 30 € al mes">
-          <label for="costsToCheck">¿Qué gastos quieres que comprobemos? <span class="optional-label">opcional</span></label>
-          <input id="costsToCheck" name="costsToCheck" type="text" maxlength="240" placeholder="Matrícula, mensualidad, equipación, licencia, seguro, transporte...">
-          <p class="field-note">En un club de fútbol o similar, separaremos cuota inicial, mensualidades, licencia/seguro, equipación, material, transporte y posibles gastos de competición.</p>
-          <label for="contactMessage">¿En qué te podemos ayudar?</label>
-          <textarea id="contactMessage" name="message" rows="4" maxlength="1000" placeholder="Cuéntanos qué actividad te interesa y qué te gustaría saber..."></textarea>
-          <button class="button button-gold button-block" id="sendContact" type="submit">Abrir correo preparado <span aria-hidden="true">↗</span></button>
-          <button class="copy-button" id="copyRequest" type="button">Copiar mi consulta</button>
-          <p class="contact-status" id="contactStatus" role="status" aria-live="polite">El correo del equipo debe configurarse antes de usar este botón. También puedes copiar tu consulta.</p>
-        </form>
+        <div class="contact-card">
+          <h3>¿Listo para dar el primer paso?</h3>
+          <p>Tu lista y un formulario guiado permiten enviar toda la información de una sola vez.</p>
+          <a class="button button-gold button-block" href="./mi-lista.html#formulario">Revisar mi lista y enviar <span aria-hidden="true">↗</span></a>
+          <p class="contact-status">El correo se prepara con una plantilla clara y se entrega directamente al buzón de FINDIA PUENTES.</p>
+        </div>
       </div>
     </section>
 
@@ -325,7 +300,7 @@
           </article>
           <article>
             <h3>Privacidad y contacto</h3>
-            <p>Esta web no tiene cuentas de usuario, no utiliza GPS, no incorpora analítica ni almacena tus datos personales en un servidor. La lista de actividades solo se mantiene en la página abierta. El formulario prepara un correo en tu aplicación; el mensaje solo se envía si tú lo revisas y lo envías desde allí. No incluyas documentación, datos bancarios, información sanitaria ni detalles sensibles sobre tu situación administrativa.</p>
+            <p>Esta web no tiene cuentas de usuario, no utiliza GPS ni incorpora analítica. La lista de actividades se mantiene en el almacenamiento de sesión de tu navegador. Cuando envías el formulario, los datos que introduces se transmiten a FormSubmit para que los procese y entregue la solicitud por correo al equipo FINDIA PUENTES. Según su información de ayuda, las solicitudes pueden conservarse durante 30 días. No incluyas documentación, datos bancarios, información sanitaria ni detalles sensibles sobre tu situación administrativa. Consulta la <a href="https://formsubmit.co/help" target="_blank" rel="noopener noreferrer">información de privacidad y funcionamiento de FormSubmit</a>.</p>
           </article>
           <article>
             <h3>Límites del acompañamiento</h3>
@@ -358,7 +333,7 @@
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="./assets/js/puentes-data.js?v=20261124"></script>
-  <script src="./assets/js/puentes.js?v=20261124"></script>
+  <script src="./assets/js/puentes-data.js?v=20261125"></script>
+  <script src="./assets/js/puentes.js?v=20261125"></script>
 </body>
 </html>
