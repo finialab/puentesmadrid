@@ -90,7 +90,7 @@
       "He estado mirando vuestra selección y estas son las opciones que me han llamado la atención:",
       activityText,
       extraMessage ? "Quería añadir también lo siguiente: " + extraMessage : "",
-      "La información de privacidad y condiciones de uso está disponible en el enlace del formulario.",
+      "He leído y acepto el aviso de privacidad y las condiciones de uso.",
       "Muchas gracias por vuestro tiempo y por la ayuda. Quedo pendiente de vuestra respuesta.",
       "Un saludo,",
       name
