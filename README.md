@@ -11,21 +11,20 @@ El sitio está publicado actualmente en el dominio personalizado `findialab.me`.
 - `assets/js/puentes.js`: filtros por distrito/categoría, lista de interés y formulario de contacto.
 
 ## Configurar el correo de contacto
-El envío no usa FormSubmit. La web estática publica el formulario y envía sus datos mediante POST a una aplicación web de Google Apps Script. El script usa el servicio oficial `MailApp` para remitir la solicitud desde la cuenta Google que autoriza y publica el backend.
+El formulario envía sus datos mediante un POST HTML nativo a una aplicación web de Google Apps Script. El script utiliza el servicio oficial MailApp y remite cada solicitud a un destinatario fijo.
 
-1. Abrir [Google Apps Script](https://script.google.com/home/projects/create) con la cuenta de Google que enviará las solicitudes.
-2. Copiar el contenido de `apps-script/Code.gs` al archivo `Code.gs` del proyecto.
-3. En el editor, seleccionar y ejecutar `authorizeServices`; conceder el permiso para enviar correo.
-4. Pulsar **Deploy → New deployment → Web app**.
-5. Elegir **Execute as: Me** y **Who has access: Anyone**, y publicar.
-6. Crear un widget de Cloudflare Turnstile en modo Managed y restringirlo al hostname `findialab.me`. Guardar su Secret Key solo en Apps Script → Configuración del proyecto → Propiedades del script, con nombre `TURNSTILE_SECRET`. Pegar únicamente la Site Key pública en `turnstileSiteKey` y la URL `/exec` en `submissionEndpoint` dentro de `assets/js/puentes-data.js`.
-7. Publicar el cambio en `main` y realizar una solicitud de prueba. El endpoint se configura en `assets/js/puentes-data.js`; debe mantenerse la URL `/exec` de la implementación activa.
+1. Abrir https://script.google.com/home/projects/create con la cuenta Google que enviará las solicitudes.
+2. Copiar apps-script/Code.gs al archivo Code.gs del proyecto. En el editor, mostrar el archivo de manifiesto appsscript.json y sustituirlo por el contenido del repositorio.
+3. Seleccionar y ejecutar authorizeServices una vez; conceder el permiso para enviar correo.
+4. En Deploy → New deployment → Web app, seleccionar Execute as: Me y Who has access: Anyone. Publicar y copiar la URL terminada en /exec.
+5. Comprobar que esa URL aparece en submissionEndpoint dentro de assets/js/puentes-data.js y en el atributo action del formulario de mi-lista.html. El destinatario por defecto es contacto@findialab.me.
+6. Cada vez que se cambie Code.gs, abrir Deploy → Manage deployments → Edit → New version → Deploy. Guardar el código en el editor no actualiza por sí solo la versión publicada.
 
-El destinatario por defecto es `contacto@findialab.me`. Para una prueba de entrega independiente, ejecutar manualmente `testMailDelivery` desde el editor de Apps Script; envía un único mensaje de prueba al destinatario actual. Si se prefiere entregar directamente a un buzón real y evitar el alias/reenvío de Namecheap, añadir la propiedad privada `MAIL_RECIPIENT` en Script Properties con ese correo; no guardar direcciones personales en el repositorio.
+El botón utiliza el POST nativo del navegador; no depende de AJAX, de una clave Turnstile ni de un servicio de terceros. El formulario también incluye un campo trampa, validación de datos, consentimiento obligatorio, un máximo de 30 correos diarios, una pausa global de ocho segundos y un envío por dirección cada 60 segundos. Si el JavaScript de la página no carga, el servidor construye un mensaje alternativo con los campos rellenados.
 
-La aplicación solo envía a ese destinatario fijo, valida los campos, exige consentimiento, usa un campo trampa antispam, aplica una pausa global de ocho segundos, limita cada dirección a un envío por minuto y fija un máximo de 30 envíos diarios. El endpoint público puede ser invocado por terceros; estos límites reducen el abuso, pero no sustituyen un sistema CAPTCHA si aumenta el tráfico. No guarda solicitudes en una base de datos propia. El correo sale desde la cuenta Google propietaria de la aplicación y usa la dirección del visitante como Reply-To. La publicación del backend y la autorización de correo requieren una acción del propietario de esa cuenta; no deben publicarse contraseñas ni claves privadas.
+Para una prueba de entrega independiente, ejecutar manualmente testMailDelivery desde el editor; envía un único correo de prueba al destinatario actual. Si se prefiere entregar directamente a otro buzón y evitar el alias/reenvío del dominio, añadir la propiedad privada MAIL_RECIPIENT en Script Properties. No guardar direcciones personales ni secretos en el repositorio.
 
-No se incluye IA generativa: el mensaje se redacta mediante una plantilla automática en el navegador.
+El correo sale desde la cuenta Google propietaria de la aplicación y utiliza la dirección del visitante como Reply-To. La publicación de una nueva versión de Apps Script y la autorización del correo requieren una acción del propietario de esa cuenta. No deben compartirse contraseñas ni claves privadas.
 ## Precios y ordenación
 Las opciones se ordenan por prioridad de coste: oportunidades con posibilidades gratuitas primero, después tarifas municipales de bajo coste y finalmente precios que requieren confirmación. Las tarifas deportivas y de música enlazan al documento oficial consultado. Para recursos culturales no existe tarifa única, por lo que se explica que el precio depende del evento. En clubes privados se recomienda comprobar cuota, matrícula, licencia/seguro, equipación y transporte por separado.
 
