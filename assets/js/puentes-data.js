@@ -4,7 +4,6 @@
 window.PUENTES_CONFIG = {
   contactEmail: "contacto@findialab.me",
   submissionEndpoint: "https://script.google.com/macros/s/AKfycbxHRHysFjgIVKInUrOlEmfpTHP6Q4izT-R5e3Di_eDTw-YgbCMiCi7Wqnn6-IW1GoAhAA/exec", // Aplicación web autorizada de Google Apps Script
-  turnstileSiteKey: "0x4AAAAAAGQ-SJsRs4heVoKD", // Clave pública del widget Turnstile
   verifiedOn: "24/11/2026"
 };
 
