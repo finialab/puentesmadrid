@@ -120,6 +120,13 @@
       return;
     }
 
+    const turnstileResponse = form.querySelector('input[name="cf-turnstile-response"]');
+    if (!turnstileResponse || !turnstileResponse.value.trim()) {
+      event.preventDefault();
+      showStatus("Completa la verificación de seguridad antes de enviar la solicitud.", "error");
+      return;
+    }
+
     const endpoint = String(config.submissionEndpoint || "").trim();
     const validEndpoint = /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/.test(endpoint);
     if (!validEndpoint) {
