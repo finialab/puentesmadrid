@@ -114,82 +114,7 @@
     render();
   });
 
-  let turnstileWidgetId = null;
-  const turnstileStatus = document.getElementById("turnstileStatus");
-  const turnstileContainer = document.getElementById("turnstileWidget");
-
-  function setTurnstileStatus(message, type) {
-    turnstileStatus.textContent = message;
-    turnstileStatus.className = "list-request-status" + (type ? " is-" + type : "");
-  }
-
-  function loadTurnstile() {
-    const siteKey = String(config.turnstileSiteKey || "").trim();
-    // El botón queda disponible para que cualquier bloqueo produzca un mensaje visible.
-    // El servidor seguirá rechazando cualquier envío que no incluya un token válido.
-    sendButton.disabled = false;
-    sendButton.textContent = "Completa la verificación para enviar";
-
-    if (!siteKey) {
-      setTurnstileStatus("La protección antispam no está configurada. No se enviará ninguna solicitud hasta corregirlo.", "error");
-      return;
-    }
-
-    function renderWidget() {
-      if (!window.turnstile || typeof window.turnstile.render !== "function") {
-        setTurnstileStatus("No se ha podido cargar la verificación. Comprueba tu conexión y recarga la página.", "error");
-        sendButton.textContent = "Reintentar verificación";
-        return;
-      }
-      try {
-        turnstileWidgetId = window.turnstile.render(turnstileContainer, {
-          sitekey: siteKey,
-          action: "puentes_request",
-          theme: "light",
-          callback: function (token) {
-            if (!token) return;
-            sendButton.disabled = false;
-            sendButton.textContent = "Enviar solicitud";
-            setTurnstileStatus("Verificación completada. Ya puedes enviar tu solicitud.", "success");
-          },
-          "expired-callback": function () {
-            sendButton.disabled = false;
-            sendButton.textContent = "Completa la verificación para enviar";
-            setTurnstileStatus("La verificación ha caducado. Complétala de nuevo para continuar.", "error");
-          },
-          "error-callback": function () {
-            sendButton.disabled = false;
-            sendButton.textContent = "Reintentar verificación";
-            setTurnstileStatus("No se ha podido verificar el navegador. Recarga la página e inténtalo de nuevo.", "error");
-          }
-        });
-      } catch (error) {
-        sendButton.disabled = false;
-        sendButton.textContent = "Reintentar verificación";
-        setTurnstileStatus("No se ha podido iniciar la protección antispam. Recarga la página e inténtalo de nuevo.", "error");
-      }
-    }
-
-    if (window.turnstile && typeof window.turnstile.render === "function") {
-      renderWidget();
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-    script.async = true;
-    script.defer = true;
-    script.onload = renderWidget;
-    script.onerror = function () {
-      sendButton.disabled = false;
-      sendButton.textContent = "Reintentar verificación";
-      setTurnstileStatus("No se ha podido cargar Cloudflare Turnstile. Comprueba tu conexión e inténtalo más tarde.", "error");
-    };
-    document.head.appendChild(script);
-  }
-
   form.addEventListener("submit", function (event) {
-    // Si falta algún dato o la protección no está lista, detenemos el envío y avisamos.
     if (!form.reportValidity()) {
       event.preventDefault();
       return;
@@ -197,40 +122,13 @@
 
     const endpoint = String(config.submissionEndpoint || "").trim();
     const validEndpoint = /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/.test(endpoint);
-    let token = "";
-    try {
-      token = (window.turnstile && turnstileWidgetId !== null)
-        ? window.turnstile.getResponse(turnstileWidgetId)
-        : "";
-    } catch (error) {
-      token = "";
-    }
-
     if (!validEndpoint) {
       event.preventDefault();
       showStatus("El servicio de envío no está configurado correctamente. No se ha enviado nada. Contacta con el equipo técnico.", "error");
       return;
     }
-    if (!token) {
-      event.preventDefault();
-      sendButton.disabled = false;
-      sendButton.textContent = "Completa la verificación para enviar";
-      showStatus("No se ha recibido el token de seguridad. Completa de nuevo la verificación y vuelve a pulsar el botón.", "error");
-      return;
-    }
 
     const senderEmail = document.getElementById("requestEmail").value.trim();
-
-    // Garantizamos que el token de Cloudflare viaje dentro del formulario original.
-    let responseField = form.querySelector('[name="cf-turnstile-response"]');
-    if (!responseField) {
-      responseField = document.createElement("input");
-      responseField.type = "hidden";
-      responseField.name = "cf-turnstile-response";
-      form.appendChild(responseField);
-    }
-    responseField.value = token;
-
     form.action = endpoint;
     form.method = "POST";
     document.getElementById("formReplyTo").value = senderEmail;
@@ -240,7 +138,8 @@
     sendButton.textContent = "Enviando…";
     showStatus("Tu solicitud se está enviando al equipo de FINDIA PUENTES…");
 
-    // No cancelamos ni relanzamos el envío: el navegador realiza el POST nativo.
+    // No cancelamos el evento: el navegador envía el formulario HTML original
+    // directamente a Google Apps Script, sin AJAX ni dependencias de terceros.
   });
 
   const menuToggle = document.getElementById("menuToggle");
