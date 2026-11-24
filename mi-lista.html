@@ -111,7 +111,13 @@
             <span>He leído el aviso de privacidad y acepto que los datos de este formulario se utilicen para enviar mi solicitud a FINDIA PUENTES mediante Google Apps Script y el servicio de correo de Google. <a href="./index.html#privacidad" target="_blank">Ver información</a>.</span>
           </label>
 
-          <button class="button button-primary button-block" id="sendRequest" type="submit">Enviar solicitud <span aria-hidden="true">↗</span></button>
+          <div class="form-security" aria-labelledby="securityLabel">
+            <p id="securityLabel"><strong>Verificación de seguridad</strong></p>
+            <div id="turnstileWidget"></div>
+            <p id="turnstileStatus" class="list-request-status" role="status" aria-live="polite">Cargando protección antispam…</p>
+          </div>
+
+          <button class="button button-primary button-block" id="sendRequest" type="submit" disabled>Completa la verificación para enviar</button>
           <p class="list-request-status" id="requestStatus" role="status" aria-live="polite">Te responderemos a la dirección de correo que indiques. No incluyas datos bancarios, información sanitaria ni documentación sensible.</p>
         </form>
       </div>
@@ -131,7 +137,7 @@
       <span>Iniciativa universitaria independiente · <a href="./index.html#privacidad">Privacidad, alcance y condiciones</a></span>
     </div>
   </footer>
-  <script src="./assets/js/puentes-data.js?v=20261124-bound-endpoint"></script>
-  <script src="./assets/js/mi-lista.js?v=20261124-bound-endpoint"></script>
+  <script src="./assets/js/puentes-data.js?v=20261125-turnstile"></script>
+  <script src="./assets/js/mi-lista.js?v=20261125-turnstile"></script>
 </body>
 </html>
