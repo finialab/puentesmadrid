@@ -109,7 +109,18 @@ function testMailDelivery() {
 function doPost(e) {
   let stage = "inicio";
   try {
-    console.log("doPost: request received");
+    // doPost(e) solo debe ejecutarse mediante una petición HTTP POST real.
+    // Si se pulsa Ejecutar en el editor, Google no pasa el evento e.
+    if (!e || !e.postData) {
+      console.error("doPost invoked without HTTP POST event. Do not run doPost manually from the editor.");
+      return renderPage_(
+        "Prueba no válida",
+        "No ejecutes doPost desde el botón Ejecutar del editor. Para comprobar el correo usa testMailDelivery; para comprobar el formulario, envía una solicitud desde findialab.me.",
+        false
+      );
+    }
+
+    console.log("doPost: HTTP POST received");
 
     stage = "comprobación de tamaño";
     const requestLength = e && e.postData ? Number(e.postData.length || 0) : 0;
