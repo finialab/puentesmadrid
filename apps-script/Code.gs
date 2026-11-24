@@ -11,7 +11,7 @@
 
 const CONFIG = Object.freeze({
   defaultRecipient: "contacto@findialab.me",
-  buildId: "FINDIA-EMAIL-20261124-NATIVEFORM",
+  buildId: "FINDIA-EMAIL-20261124-NATIVEFORM-TURNSTILE-AUTOFIELD",
   siteUrl: "https://findialab.me",
   formUrl: "https://findialab.me/mi-lista.html#formulario",
   cooldownSeconds: 60,
