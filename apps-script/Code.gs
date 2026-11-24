@@ -11,6 +11,7 @@
 
 const CONFIG = Object.freeze({
   defaultRecipient: "contacto@findialab.me",
+  buildId: "FINDIA-EMAIL-20261124-NATIVEFORM",
   siteUrl: "https://findialab.me",
   formUrl: "https://findialab.me/mi-lista.html#formulario",
   cooldownSeconds: 60,
@@ -31,7 +32,7 @@ function doGet() {
   return renderPage_(
     configured ? "Servicio de correo protegido" : "Protección pendiente de configurar",
     configured
-      ? "El servicio de recepción está activo y protegido por verificación antispam."
+      ? "Servicio activo. Versión: " + CONFIG.buildId + ". La verificación antispam está configurada."
       : "Falta configurar la clave privada de Turnstile en las propiedades del proyecto. No se aceptarán solicitudes hasta completar ese paso.",
     configured
   );
@@ -130,6 +131,15 @@ function doPost(e) {
 
     stage = "lectura de campos";
     const p = getPostParameters_(e);
+    if (Object.keys(p).length === 0) {
+      console.error("HTTP POST received but no form fields were parsed. postType=" +
+        String(e.postData.type || "unknown") + "; postLength=" + String(e.postData.length || 0));
+      return renderPage_(
+        "Formulario sin datos",
+        "El servidor ha recibido una petición POST, pero no ha podido leer los campos. Recarga Mi lista e inténtalo de nuevo.",
+        false
+      );
+    }
     const parameterNames = Object.keys(p);
     const postType = e && e.postData ? String(e.postData.type || "") : "sin postData";
     const tokenFromEvent = readParameter_(e, "cf-turnstile-response") || String(p["cf-turnstile-response"] || "");
