@@ -117,6 +117,7 @@
   let turnstileWidgetId = null;
   const turnstileStatus = document.getElementById("turnstileStatus");
   const turnstileContainer = document.getElementById("turnstileWidget");
+  const turnstileTokenInput = document.getElementById("turnstileToken");
 
   function setTurnstileStatus(message, type) {
     turnstileStatus.textContent = message;
@@ -143,18 +144,22 @@
           sitekey: siteKey,
           action: "puentes_request",
           theme: "light",
+          responseField: false,
           callback: function (token) {
             if (!token) return;
+            turnstileTokenInput.value = token;
             sendButton.disabled = false;
             sendButton.textContent = "Enviar solicitud";
             setTurnstileStatus("Verificación completada. Ya puedes enviar tu solicitud.", "success");
           },
           "expired-callback": function () {
+            turnstileTokenInput.value = "";
             sendButton.disabled = true;
             sendButton.textContent = "Completa la verificación para enviar";
             setTurnstileStatus("La verificación ha caducado. Complétala de nuevo para continuar.", "error");
           },
           "error-callback": function () {
+            turnstileTokenInput.value = "";
             sendButton.disabled = true;
             sendButton.textContent = "Verificación no disponible";
             setTurnstileStatus("No se ha podido verificar el navegador. Recarga la página e inténtalo de nuevo.", "error");
@@ -210,6 +215,7 @@
     form.method = "POST";
     document.getElementById("formReplyTo").value = senderEmail;
     document.getElementById("generatedMessage").value = buildEmailBody();
+    turnstileTokenInput.value = token;
 
     sendButton.disabled = true;
     sendButton.textContent = "Enviando…";
