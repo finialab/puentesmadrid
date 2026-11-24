@@ -9,7 +9,7 @@
   <meta name="robots" content="noindex,follow">
   <link rel="canonical" href="https://findialab.me/mi-lista.html">
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./assets/css/puentes.css?v=20261124-checkbox-visible-final">
+  <link rel="stylesheet" href="./assets/css/puentes.css?v=20261124-checkbox-grid-final">
 </head>
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -106,10 +106,13 @@
             <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
           </div>
 
-          <label class="consent-row" for="privacyConsent" style="display:flex!important;align-items:flex-start!important;gap:12px!important;margin:18px 0 12px!important;padding:14px!important;border:1px solid #cbd8ce!important;border-radius:12px!important;background:#f7faf6!important;color:#30463b!important;font-size:12px!important;line-height:1.6!important;">
-            <input class="privacy-checkbox" id="privacyConsent" name="consent" type="checkbox" value="on" required aria-label="Acepto el aviso de privacidad" style="appearance:auto!important;-webkit-appearance:checkbox!important;display:inline-block!important;visibility:visible!important;opacity:1!important;position:static!important;float:none!important;flex:0 0 20px!important;width:20px!important;min-width:20px!important;height:20px!important;min-height:20px!important;margin:2px 0 0!important;padding:0!important;border:1px solid #173f39!important;background:#fff!important;accent-color:#173f39!important;cursor:pointer!important;">
-            <span style="display:block!important;flex:1 1 auto!important;min-width:0!important;">He leído el aviso de privacidad y acepto que los datos de este formulario se utilicen para enviar mi solicitud a FINDIA PUENTES mediante Google Apps Script y el servicio de correo de Google. <a href="./index.html#privacidad" target="_blank">Ver información</a>.</span>
-          </label>
+          <div class="consent-row" style="display:grid!important;grid-template-columns:20px minmax(0,1fr)!important;align-items:start!important;column-gap:10px!important;width:100%!important;box-sizing:border-box!important;margin:18px 0 12px!important;padding:14px!important;border:1px solid #cbd8ce!important;border-radius:12px!important;background:#f7faf6!important;color:#30463b!important;font-size:12px!important;line-height:1.6!important;">
+            <input id="privacyConsent" name="consent" type="checkbox" value="on" required aria-label="Acepto el aviso de privacidad" style="appearance:auto!important;-webkit-appearance:checkbox!important;display:block!important;visibility:visible!important;opacity:1!important;position:static!important;width:20px!important;min-width:20px!important;max-width:20px!important;height:20px!important;min-height:20px!important;margin:2px 0 0!important;padding:0!important;accent-color:#173f39!important;cursor:pointer!important;box-sizing:border-box!important;">
+            <div style="display:block!important;width:100%!important;min-width:0!important;max-width:none!important;white-space:normal!important;overflow-wrap:break-word!important;word-break:normal!important;">
+              <label for="privacyConsent" style="display:inline!important;width:auto!important;max-width:none!important;margin:0!important;padding:0!important;color:inherit!important;font-size:inherit!important;line-height:inherit!important;font-weight:500!important;cursor:pointer!important;">He leído el aviso de privacidad y acepto que los datos de este formulario se utilicen para enviar mi solicitud a FINDIA PUENTES mediante Google Apps Script y el servicio de correo de Google.</label>
+              <a href="./index.html#privacidad" target="_blank" style="color:#426d59!important;text-underline-offset:3px!important;">Ver información</a>.
+            </div>
+          </div>
 
           <button class="button button-primary button-block" id="sendRequest" type="submit">Enviar solicitud</button>
           <p class="list-request-status" id="requestStatus" role="status" aria-live="polite">Te responderemos a la dirección de correo que indiques. No incluyas datos bancarios, información sanitaria ni documentación sensible.</p>
