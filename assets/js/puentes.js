@@ -13,14 +13,25 @@
   const resultsTitle = document.getElementById("resultsTitle");
   const resultsDescription = document.getElementById("resultsDescription");
   const resultCount = document.getElementById("resultCount");
-  const selectionList = document.getElementById("selectionList");
   const selectionCount = document.getElementById("selectionCount");
-  const contactStatus = document.getElementById("contactStatus");
   const toast = document.getElementById("toast");
   let category = "all";
   let sortMode = "cost";
   let hasSearched = false;
-  const selected = new Set();
+  const STORAGE_KEY = "findiaPuentesSavedActivities.v1";
+  function loadSavedIds() {
+    try {
+      const stored = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "[]");
+      return Array.isArray(stored) ? stored.filter(function (id) { return data.some(function (item) { return item.id === id; }); }) : [];
+    } catch (error) {
+      return [];
+    }
+  }
+  const selected = new Set(loadSavedIds());
+  function persistSavedIds() {
+    try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(selected))); }
+    catch (error) { showToast("No se ha podido guardar la lista en esta pestaña."); }
+  }
   let toastTimer = null;
   const categoryNames = { cultura: "Cultura", deporte: "Deporte", musica: "Música" };
 
@@ -153,22 +164,12 @@
   function renderSelection() {
     const items = data.filter(function (item) { return selected.has(item.id); });
     const countLabel = items.length + (items.length === 1 ? " actividad guardada" : " actividades guardadas");
-    selectionCount.textContent = countLabel;
+    const counter = document.getElementById("selectionCount");
+    if (counter) counter.textContent = countLabel;
     const savedCount = document.getElementById("savedCount");
     if (savedCount) savedCount.textContent = String(items.length);
-    if (!items.length) {
-      selectionList.innerHTML = '<li class="selection-empty">Todavía no has guardado ninguna actividad. Pulsa «Añadir a mi lista» en las fichas que te interesen.</li>';
-      return;
-    }
-    selectionList.innerHTML = items.map(function (item) {
-      return '<li class="selection-item">' +
-        '<div class="selection-item-copy"><strong>' + escapeHtml(item.title) + '</strong>' +
-        '<span>' + escapeHtml(item.area ? item.area + ", " : "") + escapeHtml(item.zone) + '</span>' +
-        '<small><b>Coste:</b> ' + escapeHtml(item.price || "Consultar con la entidad") + '</small></div>' +
-        '<button type="button" class="selection-remove" data-remove="' + escapeHtml(item.id) + '" aria-label="Quitar ' + escapeHtml(item.title) + ' de mi lista">Quitar</button>' +
-        '</li>';
-    }).join("");
   }
+
   function setCategory(nextCategory) {
     category = nextCategory;
     document.querySelectorAll("[data-category]").forEach(function (button) {
@@ -178,63 +179,6 @@
     });
     renderResults();
   }
-  function getRequestText() {
-    const savedItems = data.filter(function (item) { return selected.has(item.id); });
-    const field = function (id) {
-      const el = document.getElementById(id);
-      return el ? String(el.value || "").trim() : "";
-    };
-    const name = field("contactName");
-    const replyEmail = field("replyEmail");
-    const otherActivity = field("otherActivity");
-    const budget = field("budgetPreference");
-    const knownCost = field("knownCost");
-    const costsToCheck = field("costsToCheck");
-    const message = field("contactMessage");
-    const itemDetails = savedItems.map(function (item, index) {
-      return [
-        (index + 1) + ". " + item.title + " — " + item.area + ", distrito " + item.zone,
-        "   Coste publicado en FINDIA PUENTES: " + (item.price || "No publicado; consultar con la entidad."),
-        item.priceDetail ? "   Condiciones del precio: " + item.priceDetail : "",
-        item.extraCosts ? "   Otros gastos que conviene comprobar: " + item.extraCosts : "",
-        "   Ficha oficial: " + item.officialUrl,
-        item.priceSourceUrl ? "   Tarifas municipales: " + item.priceSourceUrl : ""
-      ].filter(Boolean).join("\n");
-    }).join("\n\n");
-    const lines = [
-      "Consulta desde la web FINDIA PUENTES",
-      name ? "Nombre: " + name : "",
-      replyEmail ? "Correo para responderme: " + replyEmail : "",
-      "Distrito seleccionado: " + (zoneSelect.value === "__all" ? "Toda Madrid capital" : (zoneSelect.value || "No seleccionado")),
-      townSelect.value.trim() ? "Barrio de referencia: " + townSelect.value.trim() : "",
-      "",
-      "Actividades guardadas:",
-      itemDetails || "- No he guardado una ficha concreta.",
-      "",
-      "Otra actividad que me interesa: " + (otherActivity || "No indicada"),
-      "Presupuesto que me encaja: " + (budget || "No indicado"),
-      "Precio que me han comunicado: " + (knownCost || "No indicado"),
-      "Costes que quiero que se comprueben: " + (costsToCheck || "Cuota inicial, periodicidad, material/equipación, licencia o seguro y transporte, si corresponden"),
-      "",
-      "¿En qué me gustaría recibir ayuda?",
-      message || "Me gustaría que me orientaseis sobre los siguientes pasos y el coste total antes de apuntarme."
-    ];
-    return lines.filter(function (line, index) { return !(line === "" && lines[index - 1] === ""); }).join("\n");
-  }
-  function fallbackCopy(text) {
-    const area = document.createElement("textarea");
-    area.value = text;
-    area.setAttribute("readonly", "");
-    area.style.position = "fixed";
-    area.style.opacity = "0";
-    document.body.appendChild(area);
-    area.select();
-    let ok = false;
-    try { ok = document.execCommand("copy"); } catch (error) { ok = false; }
-    area.remove();
-    return ok;
-  }
-
   zoneSelect.addEventListener("change", function () {
     updateTownOptions();
     if (hasSearched && zoneSelect.value) renderResults();
@@ -273,14 +217,6 @@
     renderResults();
     resultsArea.scrollIntoView({ behavior: "smooth", block: "start" });
   });
-  selectionList.addEventListener("click", function (event) {
-    const button = event.target.closest("[data-remove]");
-    if (!button) return;
-    selected.delete(button.getAttribute("data-remove"));
-    renderSelection();
-    if (hasSearched) renderResults();
-    showToast("Actividad eliminada de tu lista.");
-  });
   resourceGrid.addEventListener("click", function (event) {
     const button = event.target.closest("[data-save]");
     if (!button) return;
@@ -292,50 +228,9 @@
       selected.add(id);
       showToast("Actividad guardada en tu lista.");
     }
+    persistSavedIds();
     renderResults();
   });
-  document.getElementById("contactForm").addEventListener("submit", function (event) {
-    event.preventDefault();
-    const email = String(config.contactEmail || "").trim();
-    if (!email || email.indexOf("@") < 1 || email.indexOf(".") < 0) {
-      contactStatus.textContent = "La dirección del equipo todavía no está configurada. Puedes copiar la consulta; cuando se añada el correo de contacto, este botón abrirá tu aplicación de correo con todos los detalles preparados."
-      showToast("Correo de contacto pendiente de configurar.");
-      return;
-    }
-    const subject = encodeURIComponent("Consulta de orientación — FINDIA PUENTES");
-    const body = encodeURIComponent(getRequestText());
-    window.location.href = "mailto:" + encodeURI(email) + "?subject=" + subject + "&body=" + body;
-  });
-  document.getElementById("copyRequest").addEventListener("click", async function () {
-    const text = getRequestText();
-    let copied = false;
-    try {
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(text);
-        copied = true;
-      } else {
-        copied = fallbackCopy(text);
-      }
-    } catch (error) {
-      copied = fallbackCopy(text);
-    }
-    contactStatus.textContent = copied
-      ? "Consulta copiada. Puedes pegarla en un correo cuando tengas la dirección de contacto."
-      : "No se ha podido copiar automáticamente. Selecciona y copia el texto manualmente.";
-    showToast(copied ? "Consulta copiada." : "No se pudo copiar la consulta.");
-  });
-
-  const replyEmailField = document.getElementById("replyEmail");
-  if (replyEmailField) {
-    replyEmailField.addEventListener("input", function () {
-      if (replyEmailField.value && !replyEmailField.checkValidity()) {
-        replyEmailField.setCustomValidity("Introduce un correo válido o deja este campo vacío.");
-      } else {
-        replyEmailField.setCustomValidity("");
-      }
-    });
-  }
-
   const menuToggle = document.getElementById("menuToggle");
   const mainNav = document.getElementById("mainNav");
   menuToggle.addEventListener("click", function () {
