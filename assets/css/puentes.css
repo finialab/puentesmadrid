@@ -337,3 +337,73 @@ select:disabled{background-color:#f2f3ef;color:#8c9990}
 .form-security #turnstileWidget{min-height:65px;display:flex;align-items:center}
 .form-security .list-request-status{margin:8px 0 0}
 #sendRequest:disabled{opacity:.58;cursor:not-allowed}
+
+
+/* Casilla de consentimiento del formulario: cuadrado visible e interactivo */
+.list-request-card .consent-control{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:flex-start!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+  width:100%!important;
+  margin:16px 0 12px!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+}
+.list-request-card .consent-control input.consent-checkbox[type="checkbox"]{
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  display:block!important;
+  flex:0 0 18px!important;
+  width:18px!important;
+  min-width:18px!important;
+  max-width:18px!important;
+  height:18px!important;
+  min-height:18px!important;
+  margin:2px 0 0!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+  border:2px solid #173f39!important;
+  border-radius:3px!important;
+  background:#fff!important;
+  cursor:pointer!important;
+}
+.list-request-card .consent-control input.consent-checkbox[type="checkbox"]:checked{
+  background-color:#173f39!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3 8 3 3 7-7' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:13px 13px!important;
+}
+.list-request-card .consent-control input.consent-checkbox:focus-visible{
+  outline:3px solid #d59d3f!important;
+  outline-offset:3px!important;
+}
+.list-request-card .consent-control .consent-copy{
+  display:block!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  color:#30463b!important;
+  font-size:12px!important;
+  font-weight:500!important;
+  line-height:1.6!important;
+  overflow-wrap:break-word!important;
+}
+.list-request-card .consent-control .consent-copy label{
+  display:inline!important;
+  width:auto!important;
+  margin:0!important;
+  padding:0!important;
+  color:inherit!important;
+  font-size:inherit!important;
+  font-weight:inherit!important;
+  line-height:inherit!important;
+  cursor:pointer!important;
+}
+.list-request-card .consent-control .consent-copy a{
+  color:#426d59!important;
+  text-underline-offset:3px!important;
+}
