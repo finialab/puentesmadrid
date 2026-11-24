@@ -2,7 +2,7 @@
    Fuentes municipales oficiales. Revisión: 23/11/2026.
    La selección no es un directorio exhaustivo ni garantiza plazas. */
 window.PUENTES_CONFIG = {
-  contactEmail: "", // AÑADIR AQUÍ EL CORREO DE CONTACTO DE FINDIA PUENTES
+  contactEmail: "sergioruanonavarro@gmail.com", // AÑADIR AQUÍ EL CORREO DE CONTACTO DE FINDIA PUENTES
   verifiedOn: "24/11/2026"
 };
 
