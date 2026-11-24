@@ -64,12 +64,9 @@
           <div class="contact-assurance"><span aria-hidden="true">✓</span> Podremos responder al correo que nos indiques.</div>
           <div class="contact-assurance"><span aria-hidden="true">✓</span> La participación y la solicitud son voluntarias.</div>
         </div>
-        <form class="list-request-card" id="requestForm" method="POST" action="https://formsubmit.co/contacto@findialab.me" accept-charset="UTF-8">
+        <form class="list-request-card" id="requestForm" method="POST" accept-charset="UTF-8">
           <h3>Enviar mi solicitud</h3>
-          <input type="hidden" name="_subject" id="formSubject" value="Nueva solicitud de orientación — FINDIA PUENTES">
-          <input type="hidden" name="_replyto" id="formReplyTo" value="">
-          <input type="hidden" name="_next" value="https://findialab.me/gracias.html">
-          <input type="hidden" name="_url" value="https://findialab.me/mi-lista.html">
+          <input type="hidden" name="replyTo" id="formReplyTo" value="">
           <textarea hidden name="message" id="generatedMessage"></textarea>
           <p>Rellena los datos básicos. El mensaje se redactará automáticamente y se enviará al equipo al pulsar el botón.</p>
 
@@ -106,12 +103,12 @@
 
           <div class="hidden-honeypot" aria-hidden="true">
             <label for="website">Deja este campo vacío</label>
-            <input id="website" name="_honey" type="text" tabindex="-1" autocomplete="off">
+            <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
           </div>
 
           <label class="consent-row" for="privacyConsent">
-            <input id="privacyConsent" type="checkbox" required>
-            <span>He leído el aviso de privacidad y acepto que los datos de este formulario se envíen a FormSubmit para que entregue mi solicitud a FINDIA PUENTES. <a href="./index.html#privacidad" target="_blank">Ver información</a>.</span>
+            <input id="privacyConsent" name="consent" type="checkbox" required>
+            <span>He leído el aviso de privacidad y acepto que los datos de este formulario se utilicen para enviar mi solicitud a FINDIA PUENTES mediante Google Apps Script y el servicio de correo de Google. <a href="./index.html#privacidad" target="_blank">Ver información</a>.</span>
           </label>
 
           <button class="button button-primary button-block" id="sendRequest" type="submit">Enviar solicitud <span aria-hidden="true">↗</span></button>
@@ -134,7 +131,7 @@
       <span>Iniciativa universitaria independiente · <a href="./index.html#privacidad">Privacidad, alcance y condiciones</a></span>
     </div>
   </footer>
-  <script src="./assets/js/puentes-data.js?v=20261125"></script>
-  <script src="./assets/js/mi-lista.js?v=20261124-nativepost2"></script>
+  <script src="./assets/js/puentes-data.js?v=20261125-googlemail"></script>
+  <script src="./assets/js/mi-lista.js?v=20261125-googlemail"></script>
 </body>
 </html>
