@@ -15,10 +15,10 @@ El envío no usa FormSubmit. La web estática publica el formulario y envía sus
 
 1. Abrir [Google Apps Script](https://script.google.com/home/projects/create) con la cuenta de Google que enviará las solicitudes.
 2. Copiar el contenido de `apps-script/Code.gs` al archivo `Code.gs` del proyecto.
-3. En el editor, seleccionar y ejecutar `authorizeMail`; conceder el permiso para enviar correo.
+3. En el editor, seleccionar y ejecutar `authorizeServices`; conceder el permiso para enviar correo.
 4. Pulsar **Deploy → New deployment → Web app**.
 5. Elegir **Execute as: Me** y **Who has access: Anyone**, y publicar.
-6. Copiar la URL de la aplicación web, que termina en `/exec`, y pegarla en `submissionEndpoint` dentro de `assets/js/puentes-data.js`.
+6. Crear un widget de Cloudflare Turnstile en modo Managed y restringirlo al hostname `findialab.me`. Guardar su Secret Key solo en Apps Script → Configuración del proyecto → Propiedades del script, con nombre `TURNSTILE_SECRET`. Pegar únicamente la Site Key pública en `turnstileSiteKey` y la URL `/exec` en `submissionEndpoint` dentro de `assets/js/puentes-data.js`.
 7. Publicar el cambio en `main` y realizar una solicitud de prueba. El endpoint se configura en `assets/js/puentes-data.js`; debe mantenerse la URL `/exec` de la implementación activa.
 
 El destinatario se define en la constante `CONFIG.recipient` de `apps-script/Code.gs`. El valor inicial es `contacto@findialab.me`; si se usa un alias de reenvío de Namecheap, ese servicio seguirá reenviando el mensaje a los buzones configurados. Para evitar ese salto, se puede cambiar el destinatario por el buzón real del equipo directamente dentro del script (sin publicarlo en el repositorio).
