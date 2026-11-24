@@ -9,7 +9,7 @@
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://findialab.me/">
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./assets/css/puentes.css">
+  <link rel="stylesheet" href="./assets/css/puentes.css?v=20261124">
   <meta property="og:type" content="website">
   <meta property="og:title" content="FINDIA PUENTES">
   <meta property="og:description" content="Actividades de cultura, deporte y música en Madrid. Recursos seleccionados y acompañamiento personal.">
@@ -32,6 +32,7 @@
       <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="mainNav" aria-label="Abrir menú">☰</button>
       <nav class="main-nav" id="mainNav" aria-label="Navegación principal">
         <a href="#buscar">Buscar actividades</a>
+        <a href="#mi-lista">Mi lista <span class="nav-count" id="savedCount">0</span></a>
         <a href="#como-funciona">Cómo funciona</a>
         <a href="#proyecto">El proyecto</a>
         <a href="#contacto">Contacto</a>
@@ -136,8 +137,8 @@
             <div class="results-tools">
               <label class="sort-control" for="sortSelect"><span>Ordenar</span>
                 <select id="sortSelect">
+                  <option value="cost" selected>Gratis y bajo coste primero</option>
                   <option value="local">Primero mi zona</option>
-                  <option value="free">Gratuitas primero</option>
                 </select>
               </label>
             </div>
@@ -240,7 +241,7 @@
         <div>
           <p class="eyebrow"><span class="eyebrow-dot"></span> Guarda lo que te interesa</p>
           <h2>¿Has encontrado algo que te gustaría probar?</h2>
-          <p>Añade las opciones que te interesen a tu lista. Después podrás preparar una consulta para que el equipo FINDIA PUENTES te ayude a revisar los siguientes pasos.</p>
+          <p>Añade las opciones que te interesen y revisa aquí su coste orientativo, ubicación y condiciones. Después podrás preparar un correo con tu selección para pedir ayuda con los siguientes pasos.</p>
         </div>
         <div class="selection-box">
           <div class="selection-box-top">
@@ -251,7 +252,7 @@
             <li class="selection-empty">Todavía no has guardado ninguna actividad.</li>
           </ul>
           <a class="button button-primary button-block" href="#contacto">Pedir ayuda con mi selección <span aria-hidden="true">↗</span></a>
-          <p class="selection-note">Tu selección se mantiene solo en esta página mientras la tengas abierta. No se envía ni se almacena automáticamente.</p>
+          <p class="selection-note">Tu lista permanece únicamente mientras mantengas esta página abierta. No se envía ni se guarda en un servidor. Puedes quitar cualquier actividad antes de preparar tu consulta.</p>
         </div>
       </div>
     </section>
@@ -267,14 +268,31 @@
         </div>
         <form class="contact-card" id="contactForm">
           <h3>Prepara tu consulta</h3>
-          <p>Este formulario prepara un mensaje en tu aplicación de correo. No envía datos automáticamente.</p>
+          <p>Al continuar se abrirá tu aplicación de correo con el mensaje preparado. Revísalo y pulsa enviar allí; la web no envía mensajes por su cuenta.</p>
           <label for="contactName">¿Cómo te llamas? <span class="optional-label">opcional</span></label>
-          <input id="contactName" name="name" type="text" maxlength="80" placeholder="Tu nombre">
+          <input id="contactName" name="name" type="text" maxlength="80" autocomplete="name" placeholder="Tu nombre">
+          <label for="replyEmail">Tu correo de contacto <span class="optional-label">opcional</span></label>
+          <input id="replyEmail" name="replyEmail" type="email" maxlength="120" autocomplete="email" placeholder="tuemail@ejemplo.com">
+          <label for="otherActivity">¿Buscas una actividad que no aparece en la lista? <span class="optional-label">opcional</span></label>
+          <input id="otherActivity" name="otherActivity" type="text" maxlength="120" placeholder="Ej. un club de fútbol, baloncesto o voluntariado">
+          <label for="budgetPreference">¿Qué presupuesto te encaja?</label>
+          <select id="budgetPreference" name="budgetPreference">
+            <option value="Aún no lo sé; necesito orientación">Aún no lo sé; necesito orientación</option>
+            <option value="Solo opciones gratuitas">Solo opciones gratuitas</option>
+            <option value="Hasta 10 € al mes">Hasta 10 € al mes</option>
+            <option value="Entre 10 y 30 € al mes">Entre 10 y 30 € al mes</option>
+            <option value="Más de 30 € al mes, si merece la pena">Más de 30 € al mes, si merece la pena</option>
+            <option value="Puedo asumir un pago inicial, pero no una cuota alta">Puedo asumir un pago inicial, pero no una cuota alta</option>
+          </select>
+          <label for="knownCost">¿Te han indicado algún precio? <span class="optional-label">opcional</span></label>
+          <input id="knownCost" name="knownCost" type="text" maxlength="180" placeholder="Ej. 25 € de matrícula y 30 € al mes">
+          <label for="costsToCheck">¿Qué gastos quieres que comprobemos? <span class="optional-label">opcional</span></label>
+          <input id="costsToCheck" name="costsToCheck" type="text" maxlength="240" placeholder="Matrícula, mensualidad, equipación, licencia, seguro, transporte...">
           <label for="contactMessage">¿En qué te podemos ayudar?</label>
-          <textarea id="contactMessage" name="message" rows="4" maxlength="1000" placeholder="Me interesa esta actividad y me gustaría saber cómo participar..."></textarea>
-          <button class="button button-gold button-block" id="sendContact" type="submit">Preparar correo <span aria-hidden="true">↗</span></button>
+          <textarea id="contactMessage" name="message" rows="4" maxlength="1000" placeholder="Cuéntanos qué actividad te interesa y qué te gustaría saber..."></textarea>
+          <button class="button button-gold button-block" id="sendContact" type="submit">Abrir correo preparado <span aria-hidden="true">↗</span></button>
           <button class="copy-button" id="copyRequest" type="button">Copiar mi consulta</button>
-          <p class="contact-status" id="contactStatus" role="status" aria-live="polite">El correo de contacto se añadirá antes de publicar la web. Mientras tanto, puedes copiar tu consulta.</p>
+          <p class="contact-status" id="contactStatus" role="status" aria-live="polite">El correo del equipo debe configurarse antes de usar este botón. También puedes copiar tu consulta.</p>
         </form>
       </div>
     </section>
@@ -287,8 +305,35 @@
         </div>
         <div class="trust-copy">
           <p>Las fichas de esta primera selección se han elaborado a partir de páginas y directorios oficiales del Ayuntamiento de Madrid. En cada recurso encontrarás un enlace a la fuente oficial, su ubicación y las indicaciones de acceso que hemos podido comprobar.</p>
-          <p><strong>Última revisión de esta selección: 23 de noviembre de 2026.</strong> Los horarios, precios, inscripciones y plazas pueden modificarse. La fuente oficial del centro prevalece siempre sobre esta ficha.</p>
+          <p><strong>Última revisión de esta selección: 24 de noviembre de 2026.</strong> Los precios se muestran con su periodo y condiciones cuando hay una tarifa oficial publicada. Si la actividad concreta no tiene un precio verificable, se indica que hay que consultarlo. Los horarios, precios, inscripciones y plazas pueden modificarse; la fuente oficial prevalece siempre sobre esta ficha.</p>
           <p>El catálogo contiene una selección inicial de recursos municipales de varios distritos; no cubre todos los centros de Madrid ni garantiza plazas disponibles. Si no encuentras una opción en tu distrito, te mostraremos alternativas de distritos próximos.</p>
+        </div>
+      </div>
+    </section>
+    <section class="privacy-section section" id="privacidad">
+      <div class="container privacy-grid">
+        <div>
+          <p class="eyebrow"><span class="eyebrow-dot"></span> Transparencia y uso responsable</p>
+          <h2>Antes de elegir, conoce las condiciones.</h2>
+          <p class="privacy-intro">FINDIA PUENTES es una iniciativa universitaria en desarrollo y un catálogo orientativo. No somos el Ayuntamiento ni representamos oficialmente a los centros enlazados.</p>
+        </div>
+        <div class="privacy-copy">
+          <article>
+            <h3>Coste total, no solo cuota</h3>
+            <p>Antes de inscribirte, comprueba si hay matrícula o alta inicial, mensualidad o cuota de temporada, equipación o material, licencia o seguro, transporte y posibles gastos de competición. En clubes privados, estas cantidades las fija cada entidad y no deben confundirse con las tarifas municipales.</p>
+          </article>
+          <article>
+            <h3>Privacidad y contacto</h3>
+            <p>Esta web no tiene cuentas de usuario, no utiliza GPS, no incorpora analítica ni almacena tus datos personales en un servidor. La lista de actividades solo se mantiene en la página abierta. El formulario prepara un correo en tu aplicación; el mensaje solo se envía si tú lo revisas y lo envías desde allí. No incluyas documentación, datos bancarios, información sanitaria ni detalles sensibles sobre tu situación administrativa.</p>
+          </article>
+          <article>
+            <h3>Límites del acompañamiento</h3>
+            <p>La participación es voluntaria. El equipo puede ofrecer orientación inicial y facilitar el contacto, pero no garantiza plazas, admisión ni ayudas económicas, y no sustituye a profesionales de intervención social, asesoramiento jurídico o servicios públicos. Cualquier piloto con participantes deberá contar con las autorizaciones, protocolos y responsable de protección de datos que correspondan.</p>
+          </article>
+          <article>
+            <h3>Información de las actividades</h3>
+            <p>Los precios y requisitos pueden cambiar. Las referencias de tarifas municipales se señalan como tales y no son presupuestos de clubes privados. Comprueba siempre las condiciones con la entidad antes de pagar o desplazarte.</p>
+          </article>
         </div>
       </div>
     </section>
@@ -307,12 +352,12 @@
     </div>
     <div class="container footer-bottom">
       <span>© 2026 FINDIA PUENTES · Proyecto universitario</span>
-      <span>Las actividades pertenecen a sus respectivas entidades. FINDIA PUENTES no representa oficialmente a los centros enlazados.</span>
+      <span>Iniciativa universitaria independiente · <a href="#privacidad">Privacidad, alcance y condiciones</a> · Las actividades pertenecen a sus entidades.</span>
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="./assets/js/puentes-data.js"></script>
-  <script src="./assets/js/puentes.js"></script>
+  <script src="./assets/js/puentes-data.js?v=20261124"></script>
+  <script src="./assets/js/puentes.js?v=20261124"></script>
 </body>
 </html>
