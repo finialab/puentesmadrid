@@ -11,16 +11,21 @@ El sitio está publicado actualmente en el dominio personalizado `findialab.me`.
 - `assets/js/puentes.js`: filtros por distrito/categoría, lista de interés y formulario de contacto.
 
 ## Configurar el correo de contacto
-1. Crear o elegir un buzón del equipo al que queráis recibir las consultas.
-2. Abrir `assets/js/puentes-data.js`.
-3. Sustituir el valor vacío de `contactEmail` por la dirección real:
-```js
-contactEmail: "correo-real-del-equipo@ejemplo.es"
-```
-4. Guardar y publicar el cambio en la rama `main`.
+El envío no usa FormSubmit. La web estática publica el formulario y envía sus datos mediante POST a una aplicación web de Google Apps Script. El script usa el servicio oficial `MailApp` para remitir la solicitud desde la cuenta Google que autoriza y publica el backend.
 
-La página `mi-lista.html` permite revisar y quitar actividades guardadas en `sessionStorage` y enviar una solicitud mediante un formulario HTML POST estándar a FormSubmit. El correo se genera automáticamente a partir de los datos y fichas seleccionadas, se envía al buzón configurado y usa `_replyto` con el correo del visitante. Tras enviar, FormSubmit redirige a `gracias.html`. El primer uso requiere confirmar la dirección destinataria en el mensaje de activación que envía FormSubmit. FormSubmit es un tercero y procesa las respuestas para entregarlas; revisar su información de privacidad y reflejar este tratamiento en el aviso de la web. No se incluye IA generativa: se utiliza una plantilla automática estructurada para no enviar información personal a un modelo externo.
+1. Abrir [Google Apps Script](https://script.google.com/home/projects/create) con la cuenta de Google que enviará las solicitudes.
+2. Copiar el contenido de `apps-script/Code.gs` al archivo `Code.gs` del proyecto.
+3. En el editor, seleccionar y ejecutar `authorizeMail`; conceder el permiso para enviar correo.
+4. Pulsar **Deploy → New deployment → Web app**.
+5. Elegir **Execute as: Me** y **Who has access: Anyone**, y publicar.
+6. Copiar la URL de la aplicación web, que termina en `/exec`, y pegarla en `submissionEndpoint` dentro de `assets/js/puentes-data.js`.
+7. Publicar el cambio en `main` y realizar una solicitud de prueba.
 
+El destinatario se define en la constante `CONFIG.recipient` de `apps-script/Code.gs`. El valor inicial es `contacto@findialab.me`; si se usa un alias de reenvío de Namecheap, ese servicio seguirá reenviando el mensaje a los buzones configurados. Para evitar ese salto, se puede cambiar el destinatario por el buzón real del equipo directamente dentro del script (sin publicarlo en el repositorio).
+
+La aplicación solo envía a ese destinatario fijo, valida los campos, exige consentimiento, usa un campo trampa antispam y limita envíos repetidos desde una misma dirección. No guarda solicitudes en una base de datos propia. El correo sale desde la cuenta Google propietaria de la aplicación y usa la dirección del visitante como Reply-To. La publicación del backend y la autorización de correo requieren una acción del propietario de esa cuenta; no deben publicarse contraseñas ni claves privadas.
+
+No se incluye IA generativa: el mensaje se redacta mediante una plantilla automática en el navegador.
 ## Precios y ordenación
 Las opciones se ordenan por prioridad de coste: oportunidades con posibilidades gratuitas primero, después tarifas municipales de bajo coste y finalmente precios que requieren confirmación. Las tarifas deportivas y de música enlazan al documento oficial consultado. Para recursos culturales no existe tarifa única, por lo que se explica que el precio depende del evento. En clubes privados se recomienda comprobar cuota, matrícula, licencia/seguro, equipación y transporte por separado.
 
