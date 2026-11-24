@@ -143,10 +143,12 @@ function doPost(e) {
     const email = cleanEmail_(p.email);
     const message = cleanMessage_(p.message, CONFIG.maxMessageLength) ||
       buildMessageFromParameters_(p);
-    if (name.length < 2 || !email || message.length < 20) {
+    const consent = String(p.consent || "").toLowerCase();
+
+    if (name.length < 2 || !email || message.length < 20 || consent !== "on") {
       return renderPage_(
         "No se ha podido enviar",
-        "Faltan datos obligatorios. Comprueba el nombre, el correo electrónico y el mensaje antes de volver a enviarlo.",
+        "Faltan datos obligatorios o no has marcado la casilla de aceptación del aviso de privacidad y las condiciones de uso.",
         false
       );
     }
@@ -310,7 +312,7 @@ function buildMessageFromParameters_(p) {
     knownCost ? "Precio indicado: " + knownCost : "",
     costsToCheck ? "Gastos que desea comprobar: " + costsToCheck : "",
     extraMessage ? "Información adicional: " + extraMessage : "",
-    "El formulario mostró un enlace a la información de privacidad y condiciones de uso."
+    "La persona marcó la casilla para confirmar que ha leído y acepta el aviso de privacidad y las condiciones de uso."
   ].filter(Boolean).join("\n\n").slice(0, CONFIG.maxMessageLength);
 }
 
