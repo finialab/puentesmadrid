@@ -9,7 +9,7 @@
   <meta name="robots" content="noindex,follow">
   <link rel="canonical" href="https://findialab.me/mi-lista.html">
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./assets/css/puentes.css?v=20261124-privacy-notice">
+  <link rel="stylesheet" href="./assets/css/puentes.css?v=20261124-privacy-checkbox-v2">
 </head>
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -77,7 +77,7 @@
           <input id="requestEmail" name="email" type="email" maxlength="120" autocomplete="email" required placeholder="tuemail@ejemplo.com">
 
           <label for="requestDistrict">Distrito o zona de Madrid <span class="optional-label">opcional</span></label>
-          <input id="requestDistrict" name="district" type="text maxlength="80" placeholder="Ej. Carabanchel, Tetuán, Centro...">
+          <input id="requestDistrict" name="district" type="text" maxlength="80" placeholder="Ej. Carabanchel, Tetuán, Centro...">
 
           <label for="requestBudget">¿Qué presupuesto te encaja? *</label>
           <select id="requestBudget" name="budget" required>
@@ -90,13 +90,13 @@
           </select>
 
           <label for="requestOtherActivity">¿Buscas otra actividad que no aparece en la lista? <span class="optional-label">opcional</span></label>
-          <input id="requestOtherActivity" name="otherActivity" type="text maxlength="140" placeholder="Ej. apuntarme a un club de fútbol">
+          <input id="requestOtherActivity" name="otherActivity" type="text" maxlength="140" placeholder="Ej. apuntarme a un club de fútbol">
 
           <label for="requestKnownCost">¿Te han indicado algún precio? <span class="optional-label">opcional</span></label>
-          <input id="requestKnownCost" name="knownCost" type="text maxlength="180" placeholder="Ej. 25 € de matrícula y 30 € al mes">
+          <input id="requestKnownCost" name="knownCost" type="text" maxlength="180" placeholder="Ej. 25 € de matrícula y 30 € al mes">
 
           <label for="requestCostsToCheck">¿Qué gastos quieres que comprobemos? <span class="optional-label">opcional</span></label>
-          <input id="requestCostsToCheck" name="costsToCheck" type="text maxlength="240" placeholder="Cuota, licencia, seguro, equipación, transporte...">
+          <input id="requestCostsToCheck" name="costsToCheck" type="text" maxlength="240" placeholder="Cuota, licencia, seguro, equipación, transporte...">
 
           <label for="requestMessage">¿Quieres añadir algo más? <span class="optional-label">opcional</span></label>
           <textarea id="requestMessage" name="extraMessage" rows="4" maxlength="1000" placeholder="Cuéntanos brevemente qué necesitas..."></textarea>
@@ -106,9 +106,15 @@
             <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
           </div>
 
-          <p class="privacy-submit-notice">
-            Antes de enviar tu solicitud, lee la <a href="./index.html#privacidad" target="_blank" rel="noopener noreferrer">información de privacidad y condiciones de uso</a>. Al pulsar «Enviar solicitud», declaras que has podido consultar esta información.
-          </p>
+          <label class="privacy-consent">
+            <span class="privacy-consent__control">
+              <input class="privacy-consent__input" id="privacyConsent" name="consent" type="checkbox" value="on" required aria-label="He leído y acepto el aviso de privacidad y las condiciones de uso">
+              <span class="privacy-consent__box" aria-hidden="true"></span>
+            </span>
+            <span class="privacy-consent__text">
+              He leído y acepto el aviso de privacidad y las condiciones de uso. <a href="./index.html#privacidad" target="_blank" rel="noopener noreferrer">Leer información</a>.
+            </span>
+          </label>
 
           <button class="button button-primary button-block" id="sendRequest" type="submit">Enviar solicitud</button>
           <p class="list-request-status" id="requestStatus" role="status" aria-live="polite">Te responderemos a la dirección de correo que indiques. No incluyas datos bancarios, información sanitaria ni documentación sensible.</p>
@@ -131,6 +137,6 @@
     </div>
   </footer>
   <script src="./assets/js/puentes-data.js?v=20261124-form-native-fallback"></script>
-  <script src="./assets/js/mi-lista.js?v=20261124-form-native-fallback"></script>
+  <script src="./assets/js/mi-lista.js?v=20261124-privacy-checkbox-v2"></script>
 </body>
 </html>
