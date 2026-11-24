@@ -11,16 +11,14 @@
 
 const CONFIG = Object.freeze({
   defaultRecipient: "contacto@findialab.me",
-  buildId: "FINDIA-EMAIL-20261124-NATIVEFORM-TURNSTILE-AUTOFIELD",
+  buildId: "FINDIA-EMAIL-20261124-NATIVEFORM-FALLBACK",
   siteUrl: "https://findialab.me",
   formUrl: "https://findialab.me/mi-lista.html#formulario",
   cooldownSeconds: 60,
   globalCooldownSeconds: 8,
   maxDailySubmissions: 30,
   maxMessageLength: 12000,
-  maxRequestBytes: 18000,
-  allowedHostname: "findialab.me",
-  turnstileAction: "puentes_request"
+  maxRequestBytes: 18000
 });
 
 /**
@@ -28,13 +26,10 @@ const CONFIG = Object.freeze({
  * No envía ningún correo.
  */
 function doGet() {
-  const configured = Boolean(PropertiesService.getScriptProperties().getProperty("TURNSTILE_SECRET"));
   return renderPage_(
-    configured ? "Servicio de correo protegido" : "Protección pendiente de configurar",
-    configured
-      ? "Servicio activo. Versión: " + CONFIG.buildId + ". La verificación antispam está configurada."
-      : "Falta configurar la clave privada de Turnstile en las propiedades del proyecto. No se aceptarán solicitudes hasta completar ese paso.",
-    configured
+    "Servicio de correo activo",
+    "El endpoint de FINDIA PUENTES está publicado. Versión: " + CONFIG.buildId + ". Para enviar una solicitud, vuelve al formulario de la web.",
+    true
   );
 }
 
@@ -44,20 +39,7 @@ function doGet() {
  */
 function authorizeServices() {
   const remaining = MailApp.getRemainingDailyQuota();
-
-  // Solicitud deliberadamente inválida: solo solicita el permiso UrlFetchApp.
-  // No contiene ni utiliza una clave privada real.
-  const check = UrlFetchApp.fetch(
-    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-    {
-      method: "post",
-      payload: { secret: "authorization-check", response: "authorization-check" },
-      muteHttpExceptions: true
-    }
-  );
-
-  Logger.log("Permisos de correo y validación externa comprobados. Cuota disponible: " +
-    remaining + ". Respuesta de autorización HTTP: " + check.getResponseCode());
+  Logger.log("Permiso de envío de correo comprobado. Cuota diaria disponible: " + remaining);
   return remaining;
 }
 
@@ -142,11 +124,8 @@ function doPost(e) {
     }
     const parameterNames = Object.keys(p);
     const postType = e && e.postData ? String(e.postData.type || "") : "sin postData";
-    const tokenFromEvent = readParameter_(e, "cf-turnstile-response") || String(p["cf-turnstile-response"] || "");
     console.log("doPost received fields=" + parameterNames.join(",") +
-      "; postType=" + postType +
-      "; tokenPresent=" + Boolean(tokenFromEvent) +
-      "; tokenLength=" + String(tokenFromEvent || "").length);
+      "; postType=" + postType);
 
     // Campo trampa para bots. Se responde como recibido, pero no se envía nada.
     if (String(p.website || "").trim()) {
@@ -157,21 +136,13 @@ function doPost(e) {
       );
     }
 
-    stage = "validación Turnstile";
-    const token = String(tokenFromEvent || "").trim();
-    if (!verifyTurnstile_(token)) {
-      console.error("doPost: Turnstile rejected request");
-      return renderPage_(
-        "Verificación de seguridad no válida",
-        "No hemos podido comprobar la verificación antispam. Vuelve al formulario, completa de nuevo la verificación y envía otra vez.",
-        false
-      );
-    }
-
+    // El formulario usa POST nativo y no depende de servicios externos.
+    // El campo honeypot y los límites de envío se validan en el servidor.
     stage = "validación de datos";
     const name = cleanText_(p.name, 80);
     const email = cleanEmail_(p.email);
-    const message = cleanMessage_(p.message, CONFIG.maxMessageLength);
+    const message = cleanMessage_(p.message, CONFIG.maxMessageLength) ||
+      buildMessageFromParameters_(p);
     const consent = String(p.consent || "").toLowerCase();
 
     if (name.length < 2 || !email || message.length < 20 || consent !== "on") {
@@ -243,40 +214,6 @@ function doPost(e) {
 
 
 /**
- * Validación obligatoria del token Turnstile en servidor.
- * La clave privada se guarda solo en Script Properties, nunca en el repositorio.
- * Se comprueban éxito, hostname y acción esperada.
- */
-function verifyTurnstile_(token) {
-  const secret = PropertiesService.getScriptProperties().getProperty("TURNSTILE_SECRET");
-  if (!secret || !token || token.length > 2048 || token.length < 10) return false;
-
-  try {
-    const response = UrlFetchApp.fetch(
-      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-      {
-        method: "post",
-        payload: { secret: secret, response: token },
-        muteHttpExceptions: true
-      }
-    );
-    if (response.getResponseCode() !== 200) return false;
-
-    const result = JSON.parse(response.getContentText());
-    if (result.success !== true) {
-      console.error("Turnstile verification failed: " + JSON.stringify(result["error-codes"] || []));
-      return false;
-    }
-    return result.success === true &&
-      result.hostname === CONFIG.allowedHostname &&
-      result.action === CONFIG.turnstileAction;
-  } catch (error) {
-    console.error("Turnstile validation failed. No email sent.");
-    return false;
-  }
-}
-
-/**
  * Convierte los parámetros del evento de Apps Script en un objeto plano.
  * Admite los campos ya analizados por Apps Script y, como respaldo,
  * el cuerpo application/x-www-form-urlencoded o JSON.
@@ -329,19 +266,6 @@ function getPostParameters_(event) {
   return result;
 }
 
-/**
- * Lee un parámetro de evento sin registrar el contenido sensible.
- */
-function readParameter_(event, name) {
-  if (!event) return "";
-  if (event.parameter && event.parameter[name] !== undefined) return event.parameter[name];
-  if (event.parameters && event.parameters[name] !== undefined) {
-    const values = event.parameters[name];
-    return Array.isArray(values) ? (values[0] || "") : values;
-  }
-  return "";
-}
-
 function cleanText_(value, maxLength) {
   return String(value || "")
     .replace(/[\u0000-\u001F\u007F]/g, " ")
@@ -361,6 +285,35 @@ function cleanMessage_(value, maxLength) {
     .replace(/\r\n?/g, "\n")
     .trim()
     .slice(0, maxLength);
+}
+
+/**
+ * Mensaje alternativo para que el formulario funcione incluso si el
+ * JavaScript del navegador no llega a ejecutarse.
+ */
+function buildMessageFromParameters_(p) {
+  const read = function (key, limit) {
+    return cleanText_(p[key], limit || 500);
+  };
+  const name = read("name", 80);
+  const district = read("district", 80);
+  const budget = read("budget", 120);
+  const otherActivity = read("otherActivity", 140);
+  const knownCost = read("knownCost", 180);
+  const costsToCheck = read("costsToCheck", 240);
+  const extraMessage = cleanMessage_(p.extraMessage, 1000);
+
+  return [
+    "Nueva solicitud de acompañamiento desde FINDIA PUENTES.",
+    "Nombre: " + (name || "No indicado"),
+    "Zona o distrito: " + (district || "No indicado"),
+    "Presupuesto: " + (budget || "No indicado"),
+    otherActivity ? "Actividad que busca: " + otherActivity : "",
+    knownCost ? "Precio indicado: " + knownCost : "",
+    costsToCheck ? "Gastos que desea comprobar: " + costsToCheck : "",
+    extraMessage ? "Información adicional: " + extraMessage : "",
+    "La persona ha enviado el formulario y aceptado el aviso de privacidad."
+  ].filter(Boolean).join("\n\n").slice(0, CONFIG.maxMessageLength);
 }
 
 /**
