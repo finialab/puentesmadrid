@@ -28,6 +28,15 @@ El correo sale desde la cuenta Google propietaria de la aplicación y utiliza la
 ## Precios y ordenación
 Las opciones se ordenan por prioridad de coste: oportunidades con posibilidades gratuitas primero, después tarifas municipales de bajo coste y finalmente precios que requieren confirmación. Las tarifas deportivas y de música enlazan al documento oficial consultado. Para recursos culturales no existe tarifa única, por lo que se explica que el precio depende del evento. En clubes privados se recomienda comprobar cuota, matrícula, licencia/seguro, equipación y transporte por separado.
 
+
+## Seguridad y protección de datos del formulario
+
+- Las páginas aplican una política CSP mediante metaetiqueta: limita scripts y estilos al propio dominio, bloquea objetos y marcos, y permite el envío del formulario únicamente a Google Apps Script. También aplican `strict-origin-when-cross-origin` para reducir la información de referencia compartida con otros dominios.
+- El servidor valida los campos, exige la casilla de privacidad, usa un honeypot y limita la frecuencia de los envíos (pausa global, pausa por correo y tope diario). Estos controles ayudan a reducir abuso, pero no equivalen a un CAPTCHA y no detienen todos los bots.
+- **Cloudflare Turnstile no está integrado todavía.** Para activarlo se necesita crear un widget para `findialab.me`, añadir su `sitekey` pública al formulario y guardar la `secret key` privada en Script Properties de Apps Script. La clave secreta nunca debe guardarse en GitHub ni en JavaScript del navegador. La validación del token en el servidor es obligatoria.
+- El formulario entrega los datos al buzón de FINDIA PUENTES a través de Google Apps Script/MailApp. No existe una base de datos propia de solicitudes. El equipo debe definir y publicar quién es el responsable del tratamiento, la base jurídica, el plazo de conservación de los correos y cómo ejercer los derechos de protección de datos antes de iniciar el piloto.
+- El endpoint de Apps Script es público por diseño para aceptar formularios anónimos: su URL no es una contraseña ni debe tratarse como secreto. No publicar nunca contraseñas, claves privadas o datos personales en el repositorio.
+
 ## Actualización del catálogo
 Cada ficha enlaza a la fuente oficial del Ayuntamiento de Madrid. Comprobar horarios, tarifas, edades, requisitos y plazas antes de modificar una ficha. Actualizar `verifiedOn` cuando se vuelva a revisar el catálogo.
 
