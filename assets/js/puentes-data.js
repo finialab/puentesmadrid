@@ -2,7 +2,8 @@
    Fuentes municipales oficiales. Revisión: 23/11/2026.
    La selección no es un directorio exhaustivo ni garantiza plazas. */
 window.PUENTES_CONFIG = {
-  contactEmail: "contacto@findialab.me", // AÑADIR AQUÍ EL CORREO DE CONTACTO DE FINDIA PUENTES
+  contactEmail: "contacto@findialab.me",
+  submissionEndpoint: "", // Pegar aquí la URL /exec de la aplicación web de Google Apps Script
   verifiedOn: "24/11/2026"
 };
 
