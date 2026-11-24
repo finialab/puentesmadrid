@@ -93,7 +93,7 @@ function testMailDelivery() {
       "Si lo recibes, MailApp y la dirección de destino funcionan.",
       "Fecha y hora: " + now,
       "Proyecto: FINDIA PUENTES"
-    ].join("\\n"),
+    ].join("\n"),
     name: "FINDIA PUENTES"
   });
 
