@@ -10,7 +10,7 @@
  */
 
 const CONFIG = Object.freeze({
-  recipient: "contacto@findialab.me",
+  defaultRecipient: "contacto@findialab.me",
   siteUrl: "https://findialab.me",
   formUrl: "https://findialab.me/mi-lista.html#formulario",
   cooldownSeconds: 60,
@@ -61,15 +61,63 @@ function authorizeServices() {
 }
 
 /**
+ * Devuelve la dirección de destino privada si existe; en caso contrario,
+ * usa el alias oficial contacto@findialab.me.
+ * Configurar MAIL_RECIPIENT como propiedad del script permite enviar
+ * directamente al buzón real sin guardar esa dirección en GitHub.
+ */
+function getRecipient_() {
+  const properties = PropertiesService.getScriptProperties();
+  const configured = properties.getProperty("MAIL_RECIPIENT") || CONFIG.defaultRecipient;
+  const recipient = cleanEmail_(configured);
+  if (!recipient) throw new Error("MAIL_RECIPIENT no contiene una dirección válida.");
+  return recipient;
+}
+
+/**
+ * Prueba manual de entrega. Ejecutar SOLO desde el editor de Apps Script.
+ * Envía un mensaje único al destinatario configurado, no es un endpoint público.
+ */
+function testMailDelivery() {
+  const recipient = getRecipient_();
+  const quota = MailApp.getRemainingDailyQuota();
+  if (quota < 1) throw new Error("No queda cuota diaria de envío en MailApp.");
+
+  const now = Utilities.formatDate(new Date(), "Europe/Madrid", "yyyy-MM-dd HH:mm:ss");
+  MailApp.sendEmail({
+    to: recipient,
+    subject: "Prueba técnica de correo — FINDIA PUENTES",
+    body: [
+      "Este es un correo de prueba enviado manualmente desde Google Apps Script.",
+      "",
+      "Si lo recibes, MailApp y la dirección de destino funcionan.",
+      "Fecha y hora: " + now,
+      "Proyecto: FINDIA PUENTES"
+    ].join("\\n"),
+    name: "FINDIA PUENTES"
+  });
+
+  console.log("TEST_MAIL_SENT recipient=" + recipient + " remainingQuota=" + (quota - 1));
+  return "MailApp ha aceptado el correo de prueba para " + recipient +
+    ". Comprueba la bandeja de entrada y Spam.";
+}
+
+/**
  * Recibe el formulario y envía el correo desde la cuenta Google propietaria
  * de esta aplicación web. El destinatario es fijo y no lo controla el visitante.
  */
 function doPost(e) {
+  let stage = "inicio";
   try {
-    if (e && Number(e.contentLength) > CONFIG.maxRequestBytes) {
+    console.log("doPost: request received");
+
+    stage = "comprobación de tamaño";
+    const requestLength = e && e.postData ? Number(e.postData.length || 0) : 0;
+    if (requestLength > CONFIG.maxRequestBytes) {
       return renderPage_("Solicitud demasiado grande", "El formulario supera el tamaño permitido. Reduce el texto e inténtalo de nuevo.", false);
     }
 
+    stage = "lectura de campos";
     const p = (e && e.parameter) ? e.parameter : {};
 
     // Campo trampa para bots. Se responde como recibido, pero no se envía nada.
@@ -81,8 +129,10 @@ function doPost(e) {
       );
     }
 
+    stage = "validación Turnstile";
     const token = String(p["cf-turnstile-response"] || "").trim();
     if (!verifyTurnstile_(token)) {
+      console.error("doPost: Turnstile rejected request");
       return renderPage_(
         "Verificación de seguridad no válida",
         "No hemos podido comprobar la verificación antispam. Vuelve al formulario, completa de nuevo la verificación y envía otra vez.",
@@ -90,6 +140,7 @@ function doPost(e) {
       );
     }
 
+    stage = "validación de datos";
     const name = cleanText_(p.name, 80);
     const email = cleanEmail_(p.email);
     const message = cleanMessage_(p.message, CONFIG.maxMessageLength);
@@ -103,6 +154,7 @@ function doPost(e) {
       );
     }
 
+    stage = "control de frecuencia";
     if (isRateLimited_(email)) {
       return renderPage_(
         "Espera un momento",
@@ -111,6 +163,7 @@ function doPost(e) {
       );
     }
 
+    stage = "comprobación de cuota";
     const quota = MailApp.getRemainingDailyQuota();
     if (quota < 1) {
       return renderPage_(
@@ -120,6 +173,7 @@ function doPost(e) {
       );
     }
 
+    stage = "preparación del correo";
     const body = [
       message,
       "",
@@ -131,13 +185,18 @@ function doPost(e) {
       "Solicitud recibida desde https://findialab.me"
     ].join("\n");
 
+    stage = "envío con MailApp";
+    const recipient = getRecipient_();
     MailApp.sendEmail({
-      to: CONFIG.recipient,
+      to: recipient,
       subject: "Nueva solicitud de orientación — FINDIA PUENTES",
       body: body,
       name: "FINDIA PUENTES",
       replyTo: email
     });
+
+    console.log("doPost: MailApp accepted email; recipient=" + recipient);
+    stage = "respuesta de confirmación";
 
     return renderPage_(
       "¡Solicitud enviada!",
@@ -145,10 +204,10 @@ function doPost(e) {
       true
     );
   } catch (error) {
-    console.error("Fallo al enviar solicitud de FINDIA PUENTES: " + error);
+    console.error("Fallo en doPost. Etapa=" + stage + "; error=" + (error && error.stack ? error.stack : error));
     return renderPage_(
       "No se ha podido enviar",
-      "El servicio de correo no ha podido aceptar la solicitud. No se ha confirmado ningún envío. Vuelve al formulario e inténtalo más tarde.",
+      "El envío ha fallado durante esta etapa: " + stage + ". No se ha confirmado ningún envío. Consulta Apps Script → Ejecuciones para ver el detalle técnico.",
       false
     );
   }
@@ -176,6 +235,10 @@ function verifyTurnstile_(token) {
     if (response.getResponseCode() !== 200) return false;
 
     const result = JSON.parse(response.getContentText());
+    if (result.success !== true) {
+      console.error("Turnstile verification failed: " + JSON.stringify(result["error-codes"] || []));
+      return false;
+    }
     return result.success === true &&
       result.hostname === CONFIG.allowedHostname &&
       result.action === CONFIG.turnstileAction;
