@@ -115,31 +115,32 @@
   });
 
   form.addEventListener("submit", function (event) {
-    if (!form.reportValidity()) {
-      event.preventDefault();
-      return;
-    }
+    event.preventDefault();
 
-    const recipient = String(config.contactEmail || "").trim();
-    if (!recipient || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient)) {
-      event.preventDefault();
-      showStatus("El correo de recepción del equipo no está configurado correctamente. Contacta con FINDIA PUENTES por otro canal.", "error");
+    if (!form.reportValidity()) return;
+
+    const endpoint = String(config.submissionEndpoint || "").trim();
+    const validEndpoint = /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/.test(endpoint);
+
+    if (!validEndpoint) {
+      showStatus("El envío directo por Google todavía no está conectado. No se ha enviado nada. El equipo debe completar la autorización de Google Apps Script.", "error");
       return;
     }
 
     const senderName = document.getElementById("requestName").value.trim();
     const senderEmail = document.getElementById("requestEmail").value.trim();
 
-    // El formulario HTML real hace el POST; no se crea ni se envía un segundo formulario por JavaScript.
-    form.action = "https://formsubmit.co/" + recipient;
+    form.action = endpoint;
+    form.method = "POST";
     document.getElementById("formReplyTo").value = senderEmail;
-    document.getElementById("formSubject").value = "Solicitud de orientación de " + senderName + " — FINDIA PUENTES";
     document.getElementById("generatedMessage").value = buildEmailBody();
 
     sendButton.disabled = true;
     sendButton.textContent = "Enviando…";
-    showStatus("Enviando tu solicitud. Si el servicio la acepta, volverás automáticamente a la página de confirmación.");
-    // No se llama a preventDefault(): el navegador envía este formulario mediante POST nativo.
+    showStatus("Enviando tu solicitud directamente mediante el servicio de correo de Google…");
+
+    // Envía el mismo formulario por POST nativo al endpoint autorizado de Apps Script.
+    HTMLFormElement.prototype.submit.call(form);
   });
 
   const menuToggle = document.getElementById("menuToggle");
