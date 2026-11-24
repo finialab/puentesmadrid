@@ -13,7 +13,9 @@ const CONFIG = Object.freeze({
   recipient: "contacto@findialab.me",
   siteUrl: "https://findialab.me",
   formUrl: "https://findialab.me/mi-lista.html#formulario",
-  cooldownSeconds: 20,
+  cooldownSeconds: 60,
+  globalCooldownSeconds: 8,
+  maxDailySubmissions: 30,
   maxMessageLength: 12000
 });
 
@@ -141,20 +143,45 @@ function cleanMessage_(value, maxLength) {
     .slice(0, maxLength);
 }
 
+/**
+ * Límites de abuso:
+ * - máximo 30 correos al día a través del formulario;
+ * - un envío global cada 8 segundos;
+ * - un envío por dirección cada 60 segundos.
+ * Se usan propiedades y caché del servidor; no se confía en los valores del navegador.
+ */
 function isRateLimited_(email) {
-  const bytes = Utilities.computeDigest(
-    Utilities.DigestAlgorithm.SHA_256,
-    email.toLowerCase(),
-    Utilities.Charset.UTF_8
-  );
-  const key = "request_" + bytes.map(function (byte) {
-    return ("0" + ((byte + 256) % 256).toString(16)).slice(-2);
-  }).join("");
+  const lock = LockService.getScriptLock();
+  lock.waitLock(5000);
 
-  const cache = CacheService.getScriptCache();
-  if (cache.get(key)) return true;
-  cache.put(key, "1", CONFIG.cooldownSeconds);
-  return false;
+  try {
+    const cache = CacheService.getScriptCache();
+    const properties = PropertiesService.getScriptProperties();
+    const today = Utilities.formatDate(new Date(), "Europe/Madrid", "yyyyMMdd");
+    const dailyKey = "sent_count_" + today;
+    const sentToday = Number(properties.getProperty(dailyKey) || "0");
+
+    if (sentToday >= CONFIG.maxDailySubmissions) return true;
+    if (cache.get("global_submission_cooldown")) return true;
+
+    const bytes = Utilities.computeDigest(
+      Utilities.DigestAlgorithm.SHA_256,
+      email.toLowerCase(),
+      Utilities.Charset.UTF_8
+    );
+    const emailKey = "request_" + bytes.map(function (byte) {
+      return ("0" + ((byte + 256) % 256).toString(16)).slice(-2);
+    }).join("");
+
+    if (cache.get(emailKey)) return true;
+
+    properties.setProperty(dailyKey, String(sentToday + 1));
+    cache.put("global_submission_cooldown", "1", CONFIG.globalCooldownSeconds);
+    cache.put(emailKey, "1", CONFIG.cooldownSeconds);
+    return false;
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 function renderPage_(title, message, success) {
