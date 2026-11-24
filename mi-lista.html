@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#173f39">
+  <title>Mi lista | FINDIA PUENTES</title>
+  <meta name="description" content="Revisa tus actividades guardadas y envía una solicitud de acompañamiento a FINDIA PUENTES.">
+  <meta name="robots" content="noindex,follow">
+  <link rel="canonical" href="https://findialab.me/mi-lista.html">
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./assets/css/puentes.css?v=20261125">
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="./index.html#inicio" aria-label="FINDIA PUENTES, inicio">
+        <span class="brand-symbol" aria-hidden="true">
+          <svg viewBox="0 0 48 40"><path d="M4 32h40M8 31c3-13 10-20 16-20s13 7 16 20" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M13 31V23m11 8V13m11 18V23" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="24" cy="7" r="3" fill="#e5b75e"/></svg>
+        </span>
+        <span class="brand-name">FINDIA PUENTES<span class="brand-sub">Madrid capital</span></span>
+      </a>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="mainNav" aria-label="Abrir menú">☰</button>
+      <nav class="main-nav" id="mainNav" aria-label="Navegación principal">
+        <a href="./index.html#buscar">Actividades</a>
+        <a href="./mi-lista.html" aria-current="page">Mi lista <span class="nav-count" id="savedCount">0</span></a>
+        <a href="./index.html#como-funciona">Cómo funciona</a>
+        <a href="./index.html#proyecto">El proyecto</a>
+      </nav>
+    </div>
+  </header>
+  <main id="contenido">
+    <section class="list-page-section section">
+      <div class="container">
+        <div class="list-page-heading">
+          <div>
+            <p class="eyebrow"><span class="eyebrow-dot"></span> Tus actividades guardadas</p>
+            <h1>Mi lista</h1>
+            <p>Revisa las actividades que has guardado, compara sus costes y elimina las que ya no te interesen. Cuando estés listo, rellena el formulario una sola vez y enviaremos tu solicitud al equipo de FINDIA PUENTES.</p>
+          </div>
+          <a class="button button-outline list-back-link" href="./index.html#buscar">← Volver a actividades</a>
+        </div>
+        <div class="results-meta">
+          <span id="listCount">0 actividades guardadas</span>
+          <button class="list-clear-button" id="clearList" type="button">Vaciar mi lista</button>
+        </div>
+        <div class="saved-activities-grid" id="savedActivities" aria-live="polite"></div>
+        <div class="list-empty" id="listEmpty" hidden>
+          <h2>Tu lista está vacía</h2>
+          <p>Vuelve al catálogo, busca una actividad y pulsa «Añadir a mi lista». Después podrás regresar aquí para revisar los precios y enviar una sola solicitud.</p>
+          <a class="button button-primary" href="./index.html#buscar">Buscar actividades</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="list-request-section section" id="formulario">
+      <div class="container list-request-grid">
+        <div class="list-request-copy">
+          <p class="eyebrow eyebrow-light"><span class="eyebrow-dot"></span> Un solo formulario</p>
+          <h2>Cuéntanos qué necesitas.</h2>
+          <p>La solicitud incluirá automáticamente las actividades de tu lista, sus costes publicados y los gastos que conviene comprobar. Así no tendrás que redactar un correo ni copiar la información.</p>
+          <div class="contact-assurance"><span aria-hidden="true">✓</span> La solicitud llegará directamente al buzón del equipo.</div>
+          <div class="contact-assurance"><span aria-hidden="true">✓</span> Podremos responder al correo que nos indiques.</div>
+          <div class="contact-assurance"><span aria-hidden="true">✓</span> La participación y la solicitud son voluntarias.</div>
+        </div>
+        <form class="list-request-card" id="requestForm">
+          <h3>Enviar mi solicitud</h3>
+          <p>Rellena los datos básicos. El mensaje se redactará automáticamente y se enviará al equipo al pulsar el botón.</p>
+
+          <label for="requestName">Nombre *</label>
+          <input id="requestName" name="name" type="text" maxlength="80" autocomplete="name" required placeholder="Tu nombre">
+
+          <label for="requestEmail">Tu correo electrónico *</label>
+          <input id="requestEmail" name="email" type="email" maxlength="120" autocomplete="email" required placeholder="tuemail@ejemplo.com">
+
+          <label for="requestDistrict">Distrito o zona de Madrid <span class="optional-label">opcional</span></label>
+          <input id="requestDistrict" name="district" type="text" maxlength="80" placeholder="Ej. Carabanchel, Tetuán, Centro...">
+
+          <label for="requestBudget">¿Qué presupuesto te encaja? *</label>
+          <select id="requestBudget" name="budget" required>
+            <option value="Aún no lo sé; necesito orientación">Aún no lo sé; necesito orientación</option>
+            <option value="Solo opciones gratuitas">Solo opciones gratuitas</option>
+            <option value="Hasta 10 € al mes">Hasta 10 € al mes</option>
+            <option value="Entre 10 y 30 € al mes">Entre 10 y 30 € al mes</option>
+            <option value="Más de 30 € al mes, si merece la pena">Más de 30 € al mes, si merece la pena</option>
+            <option value="Puedo asumir un pago inicial, pero no una cuota alta">Puedo asumir un pago inicial, pero no una cuota alta</option>
+          </select>
+
+          <label for="requestOtherActivity">¿Buscas otra actividad que no aparece en la lista? <span class="optional-label">opcional</span></label>
+          <input id="requestOtherActivity" name="otherActivity" type="text" maxlength="140" placeholder="Ej. apuntarme a un club de fútbol">
+
+          <label for="requestKnownCost">¿Te han indicado algún precio? <span class="optional-label">opcional</span></label>
+          <input id="requestKnownCost" name="knownCost" type="text" maxlength="180" placeholder="Ej. 25 € de matrícula y 30 € al mes">
+
+          <label for="requestCostsToCheck">¿Qué gastos quieres que comprobemos? <span class="optional-label">opcional</span></label>
+          <input id="requestCostsToCheck" name="costsToCheck" type="text" maxlength="240" placeholder="Cuota, licencia, seguro, equipación, transporte...">
+
+          <label for="requestMessage">¿Quieres añadir algo más? <span class="optional-label">opcional</span></label>
+          <textarea id="requestMessage" name="message" rows="4" maxlength="1000" placeholder="Cuéntanos brevemente qué necesitas..."></textarea>
+
+          <div class="hidden-honeypot" aria-hidden="true">
+            <label for="website">Deja este campo vacío</label>
+            <input id="website" name="_honey" type="text" tabindex="-1" autocomplete="off">
+          </div>
+
+          <label class="consent-row" for="privacyConsent">
+            <input id="privacyConsent" name="privacyConsent" type="checkbox" required>
+            <span>He leído el aviso de privacidad y acepto que los datos de este formulario se envíen a FormSubmit para que entregue mi solicitud a FINDIA PUENTES. <a href="./index.html#privacidad" target="_blank">Ver información</a>.</span>
+          </label>
+
+          <button class="button button-primary button-block" id="sendRequest" type="submit">Enviar solicitud <span aria-hidden="true">↗</span></button>
+          <p class="list-request-status" id="requestStatus" role="status" aria-live="polite">Te responderemos a la dirección de correo que indiques. No incluyas datos bancarios, información sanitaria ni documentación sensible.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="container footer-top">
+      <a class="brand brand-footer" href="./index.html#inicio">
+        <span class="brand-symbol" aria-hidden="true"><svg viewBox="0 0 48 40"><path d="M4 32h40M8 31c3-13 10-20 16-20s13 7 16 20" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M13 31V23m11 8V13m11 18V23" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="24" cy="7" r="3" fill="#e5b75e"/></svg></span>
+        <span class="brand-name">FINDIA PUENTES<span class="brand-sub">Madrid capital</span></span>
+      </a>
+      <p>Conectar oportunidades. Construir pertenencia.</p>
+      <a href="./index.html#inicio" class="back-top">Volver a actividades ↑</a>
+    </div>
+    <div class="container footer-bottom">
+      <span>© 2026 FINDIA PUENTES · Proyecto universitario</span>
+      <span>Iniciativa universitaria independiente · <a href="./index.html#privacidad">Privacidad, alcance y condiciones</a></span>
+    </div>
+  </footer>
+  <script src="./assets/js/puentes-data.js?v=20261125"></script>
+  <script src="./assets/js/mi-lista.js?v=20261125"></script>
+</body>
+</html>
