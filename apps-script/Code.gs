@@ -5,7 +5,7 @@
  *   Ejecutar como: Yo
  *   Quién tiene acceso: Cualquier persona
  *
- * Ejecuta authorizeMail() una vez desde el editor y concede el permiso
+ * Ejecuta authorizeServices() una vez desde el editor y concede el permiso
  * para enviar correo. Después crea una implementación de tipo Aplicación web.
  */
 
