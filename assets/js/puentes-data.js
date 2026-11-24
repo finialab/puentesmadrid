@@ -3,7 +3,7 @@
    La selección no es un directorio exhaustivo ni garantiza plazas. */
 window.PUENTES_CONFIG = {
   contactEmail: "contacto@findialab.me",
-  submissionEndpoint: "", // Pegar aquí la URL /exec de la aplicación web de Google Apps Script
+  submissionEndpoint: "https://script.google.com/macros/s/AKfycbxHRHysFjgIVKInUrOlEmfpTHP6Q4izT-R5e3Di_eDTw-YgbCMiCi7Wqnn6-IW1GoAhAA/exec", // Aplicación web autorizada de Google Apps Script
   verifiedOn: "24/11/2026"
 };
 
