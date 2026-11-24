@@ -326,3 +326,11 @@ select:disabled{background-color:#f2f3ef;color:#8c9990}
 .list-clear-button{border:0;background:transparent;color:#8d594f;font-size:11px;font-weight:750;text-decoration:underline;text-underline-offset:3px;padding:5px}
 .hidden-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important}
 @media(max-width:760px){.list-page-heading{align-items:flex-start;flex-direction:column}.saved-activities-grid{grid-template-columns:1fr}.list-request-grid{grid-template-columns:1fr;gap:25px}.list-request-card{padding:21px}}
+
+
+/* Protección anti-spam Turnstile */
+.form-security{margin:16px 0 8px;padding:14px 15px;border:1px solid #dfe7df;border-radius:12px;background:#f8faf7}
+.form-security>p:first-child{margin:0 0 10px;color:#30463b;font-size:13px}
+.form-security #turnstileWidget{min-height:65px;display:flex;align-items:center}
+.form-security .list-request-status{margin:8px 0 0}
+#sendRequest:disabled{opacity:.58;cursor:not-allowed}
