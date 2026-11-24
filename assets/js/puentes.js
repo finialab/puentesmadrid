@@ -304,7 +304,7 @@
     }
     const subject = encodeURIComponent("Consulta de orientación — FINDIA PUENTES");
     const body = encodeURIComponent(getRequestText());
-    window.location.href = "mailto:" + encodeURIComponent(email) + "?subject=" + subject + "&body=" + body;
+    window.location.href = "mailto:" + encodeURI(email) + "?subject=" + subject + "&body=" + body;
   });
   document.getElementById("copyRequest").addEventListener("click", async function () {
     const text = getRequestText();
