@@ -167,7 +167,7 @@ window.PUENTES_ACTIVITIES = [
   {
     id:"deporte-cea", category:"deporte",
     title:"Centro Deportivo Municipal Cea Bermúdez",
-    municipality:"Madrid", zone:"Chamberí", area:"",
+    municipality:"Madrid", zone:"Chamberí", area:"Arapiles",
     address:"Calle de Cea Bermúdez, 3, 28003 Madrid",
     summary:"Centro deportivo situado en Chamberí e incluido en el directorio oficial municipal.",
     offer:"Consulta directamente el catálogo del centro para conocer las instalaciones, actividades dirigidas y plazas.",
