@@ -118,10 +118,10 @@ function doPost(e) {
     }
 
     stage = "lectura de campos";
-    const p = (e && e.parameter) ? e.parameter : {};
+    const p = getPostParameters_(e);
     const parameterNames = Object.keys(p);
     const postType = e && e.postData ? String(e.postData.type || "") : "sin postData";
-    const tokenFromEvent = readParameter_(e, "cf-turnstile-response");
+    const tokenFromEvent = readParameter_(e, "cf-turnstile-response") || String(p["cf-turnstile-response"] || "");
     console.log("doPost received fields=" + parameterNames.join(",") +
       "; postType=" + postType +
       "; tokenPresent=" + Boolean(tokenFromEvent) +
@@ -256,17 +256,69 @@ function verifyTurnstile_(token) {
 }
 
 /**
- * Lee un parámetro tanto de e.parameter como de e.parameters.
- * No registra ni expone el contenido del token.
+ * Convierte los parámetros del evento de Apps Script en un objeto plano.
+ * Admite los campos ya analizados por Apps Script y, como respaldo,
+ * el cuerpo application/x-www-form-urlencoded o JSON.
+ */
+function getPostParameters_(event) {
+  const result = {};
+  if (!event) return result;
+
+  if (event.parameter && typeof event.parameter === "object") {
+    Object.keys(event.parameter).forEach(function (key) {
+      result[key] = event.parameter[key];
+    });
+  }
+
+  if (Object.keys(result).length === 0 && event.parameters && typeof event.parameters === "object") {
+    Object.keys(event.parameters).forEach(function (key) {
+      const value = event.parameters[key];
+      result[key] = Array.isArray(value) ? (value[0] || "") : value;
+    });
+  }
+
+  if (Object.keys(result).length === 0 && event.postData && event.postData.contents) {
+    const raw = String(event.postData.contents);
+    const type = String(event.postData.type || "").toLowerCase();
+
+    if (type.indexOf("application/json") !== -1) {
+      try {
+        const parsed = JSON.parse(raw);
+        Object.keys(parsed).forEach(function (key) { result[key] = parsed[key]; });
+      } catch (error) {
+        console.error("POST body JSON could not be parsed.");
+      }
+    } else {
+      raw.split("&").forEach(function (pair) {
+        if (!pair) return;
+        const separator = pair.indexOf("=");
+        const rawKey = separator >= 0 ? pair.slice(0, separator) : pair;
+        const rawValue = separator >= 0 ? pair.slice(separator + 1) : "";
+        try {
+          const key = decodeURIComponent(rawKey.replace(/\+/g, " "));
+          const value = decodeURIComponent(rawValue.replace(/\+/g, " "));
+          if (key) result[key] = value;
+        } catch (error) {
+          console.error("POST form field could not be decoded.");
+        }
+      });
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Lee un parámetro de evento sin registrar el contenido sensible.
  */
 function readParameter_(event, name) {
   if (!event) return "";
-  const direct = event.parameter ? event.parameter[name] : "";
-  if (direct !== undefined && direct !== null && String(direct) !== "") return direct;
-
-  const multiple = event.parameters ? event.parameters[name] : null;
-  if (Array.isArray(multiple)) return multiple.length ? multiple[0] : "";
-  return multiple == null ? "" : multiple;
+  if (event.parameter && event.parameter[name] !== undefined) return event.parameter[name];
+  if (event.parameters && event.parameters[name] !== undefined) {
+    const values = event.parameters[name];
+    return Array.isArray(values) ? (values[0] || "") : values;
+  }
+  return "";
 }
 
 function cleanText_(value, maxLength) {
