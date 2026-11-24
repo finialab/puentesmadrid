@@ -190,6 +190,7 @@
 
   form.addEventListener("submit", function (event) {
     event.preventDefault();
+
     if (!form.reportValidity()) return;
 
     const endpoint = String(config.submissionEndpoint || "").trim();
@@ -210,17 +211,39 @@
 
     const senderName = document.getElementById("requestName").value.trim();
     const senderEmail = document.getElementById("requestEmail").value.trim();
+    const payload = {
+      name: senderName,
+      email: senderEmail,
+      replyTo: senderEmail,
+      message: buildEmailBody(),
+      consent: document.getElementById("privacyConsent").checked ? "on" : "",
+      website: "",
+      "cf-turnstile-response": token
+    };
 
-    form.action = endpoint;
-    form.method = "POST";
-    document.getElementById("formReplyTo").value = senderEmail;
-    document.getElementById("generatedMessage").value = buildEmailBody();
-    turnstileTokenInput.value = token;
+    // Se crea un formulario nuevo y sencillo para evitar depender de controles
+    // dinámicos del widget o del formulario visible al serializar el POST.
+    const postForm = document.createElement("form");
+    postForm.method = "POST";
+    postForm.action = endpoint;
+    postForm.enctype = "application/x-www-form-urlencoded";
+    postForm.acceptCharset = "UTF-8";
+    postForm.target = "_self";
+    postForm.style.display = "none";
+
+    Object.keys(payload).forEach(function (key) {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = String(payload[key] == null ? "" : payload[key]);
+      postForm.appendChild(input);
+    });
 
     sendButton.disabled = true;
     sendButton.textContent = "Enviando…";
-    showStatus("Verificación completada. Enviando tu solicitud…");
-    HTMLFormElement.prototype.submit.call(form);
+    showStatus("Tu solicitud se está enviando al servicio seguro de FINDIA PUENTES…");
+    document.body.appendChild(postForm);
+    HTMLFormElement.prototype.submit.call(postForm);
   });
 
   const menuToggle = document.getElementById("menuToggle");
