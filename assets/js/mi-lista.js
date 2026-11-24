@@ -112,10 +112,13 @@
   form.addEventListener("submit", async function (event) {
     event.preventDefault();
     if (!form.reportValidity()) return;
-    if (!config.contactEmail || config.contactEmail.indexOf("@") < 1) {
-      showStatus("El correo del equipo todavía no está configurado. Escríbenos por el canal alternativo indicado por FINDIA PUENTES.", "error");
+
+    const recipient = String(config.contactEmail || "").trim();
+    if (!recipient || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient)) {
+      showStatus("El correo de recepción del equipo no está configurado correctamente. Contacta con FINDIA PUENTES por otro canal.", "error");
       return;
     }
+
     const emailBody = buildEmailBody();
     const payload = {
       name: document.getElementById("requestName").value.trim(),
@@ -134,30 +137,57 @@
       _honey: document.getElementById("website").value,
       _url: "https://findialab.me/mi-lista.html"
     };
+
+    const originalButtonText = 'Enviar solicitud <span aria-hidden="true">↗</span>';
+    const controller = new AbortController();
+    let timeoutId = null;
     sendButton.disabled = true;
     sendButton.textContent = "Enviando solicitud…";
-    showStatus("Estamos enviando tu solicitud de forma segura al equipo. No cierres esta página todavía.");
+    showStatus("Conectando con el servicio de correo. Esto no debería tardar más de 15 segundos.");
+
     try {
-      const response = await fetch("https://formsubmit.co/ajax/" + config.contactEmail, {
+      timeoutId = window.setTimeout(function () {
+        controller.abort();
+      }, 15000);
+
+      const response = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(recipient), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+        cache: "no-store"
       });
-      let result = {};
-      try { result = await response.json(); } catch (error) { result = {}; }
-      if (!response.ok || result.success === false || result.success === "false") {
-        throw new Error(result.message || "El servicio no ha aceptado la solicitud.");
+
+      const responseText = await response.text();
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (parseError) {
+        throw new Error("El servicio de correo ha devuelto una respuesta que no podemos interpretar. Inténtalo de nuevo más tarde.");
       }
-      showStatus("¡Solicitud enviada! FINDIA PUENTES la recibirá en su correo. Podrá responder directamente a la dirección que has indicado. Si es el primer envío del formulario, el equipo tendrá que confirmar el correo de activación de FormSubmit.", "success");
+
+      if (!response.ok || String(result.success).toLowerCase() !== "true") {
+        const detail = result.message || result.error || ("Respuesta HTTP " + response.status);
+        throw new Error(String(detail));
+      }
+
+      showStatus("Solicitud aceptada por el servicio de correo. Si es el primer envío a contacto@findialab.me, revisa el buzón y confirma el mensaje de activación de FormSubmit. A partir de la activación, las solicitudes se reenviarán a los miembros del equipo configurados en Namecheap.", "success");
       form.reset();
     } catch (error) {
-      showStatus("No hemos podido enviar la solicitud ahora mismo. Comprueba tu conexión y vuelve a intentarlo. Si el problema continúa, contacta con el equipo por otra vía.", "error");
+      if (error && error.name === "AbortError") {
+        showStatus("El servicio de correo no ha respondido en 15 segundos. La solicitud no se ha podido confirmar. Revisa la conexión e inténtalo una sola vez más. Si persiste, comprueba la activación de contacto@findialab.me en el correo del equipo.", "error");
+      } else if (error instanceof TypeError) {
+        showStatus("No se ha podido conectar con FormSubmit. Puede ser un bloqueo de red o un problema temporal del servicio. Comprueba tu conexión e inténtalo de nuevo.", "error");
+      } else {
+        showStatus("No se ha podido confirmar el envío: " + (error && error.message ? error.message : "error desconocido") + ". Comprueba que contacto@findialab.me está activado en FormSubmit y vuelve a intentarlo.", "error");
+      }
     } finally {
+      if (timeoutId !== null) window.clearTimeout(timeoutId);
       sendButton.disabled = false;
-      sendButton.innerHTML = 'Enviar solicitud <span aria-hidden="true">↗</span>';
+      sendButton.innerHTML = originalButtonText;
     }
   });
 
