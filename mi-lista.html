@@ -70,7 +70,7 @@
           <input type="hidden" name="_replyto" id="formReplyTo" value="">
           <input type="hidden" name="_next" value="https://findialab.me/gracias.html">
           <input type="hidden" name="_url" value="https://findialab.me/mi-lista.html">
-          <input type="hidden" id="generatedMessage" value="">
+          <textarea hidden name="message" id="generatedMessage"></textarea>
           <p>Rellena los datos básicos. El mensaje se redactará automáticamente y se enviará al equipo al pulsar el botón.</p>
 
           <label for="requestName">Nombre *</label>
@@ -102,7 +102,7 @@
           <input id="requestCostsToCheck" type="text" maxlength="240" placeholder="Cuota, licencia, seguro, equipación, transporte...">
 
           <label for="requestMessage">¿Quieres añadir algo más? <span class="optional-label">opcional</span></label>
-          <textarea id="requestMessage" name="message" rows="4" maxlength="1000" placeholder="Cuéntanos brevemente qué necesitas..."></textarea>
+          <textarea id="requestMessage" rows="4" maxlength="1000" placeholder="Cuéntanos brevemente qué necesitas..."></textarea>
 
           <div class="hidden-honeypot" aria-hidden="true">
             <label for="website">Deja este campo vacío</label>
