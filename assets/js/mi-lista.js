@@ -82,6 +82,7 @@
             "   Coste publicado: " + (item.price || "Pendiente de confirmar con la entidad"),
             item.priceDetail ? "   Información sobre el coste: " + item.priceDetail : "",
             item.extraCosts ? "   Otros gastos que conviene comprobar: " + item.extraCosts : "",
+            item.priceSourceUrl ? "   Fuente de tarifas: " + item.priceSourceUrl : "",
             "   Fuente oficial: " + item.officialUrl
           ];
           return lines.filter(Boolean).join("\n");
