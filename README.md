@@ -5,10 +5,15 @@ Web del proyecto FINDIA PUENTES para descubrir actividades culturales, deportiva
 El sitio está publicado actualmente en el dominio personalizado `findialab.me`. El nombre público del proyecto y de la web es **FINDIA PUENTES**.
 
 ## Estructura
-- `index.html`: portada, buscador y explicación del proyecto.
-- `assets/css/puentes.css`: estilos adaptables a móvil y escritorio.
+- `index.html`: portada, buscador, explicación del proyecto, fuentes y privacidad.
+- `mi-lista.html`: actividades guardadas y formulario de solicitud con Turnstile.
+- `gracias.html`: página estática de confirmación.
+- `assets/css/puentes.css`: estilos responsive, accesibilidad y componentes visuales.
 - `assets/js/puentes-data.js`: catálogo de recursos, distritos y configuración del correo.
-- `assets/js/puentes.js`: filtros por distrito/categoría, lista de interés y formulario de contacto.
+- `assets/js/puentes.js`: filtros por distrito/categoría y lista de interés.
+- `assets/js/mi-lista.js`: gestión de actividades guardadas y resumen estructurado del correo.
+- `apps-script/Code.gs`: validación del formulario, Siteverify y envío de correo.
+- `apps-script/appsscript.json`: permisos del proyecto de Apps Script.
 
 ## Configurar el correo y Cloudflare Turnstile
 
@@ -29,7 +34,7 @@ El formulario también incluye un campo trampa, validación de datos, casilla ob
 
 Para una prueba de entrega independiente, ejecutar manualmente `testMailDelivery`; envía un único correo al destinatario actual. El destino por defecto es `contacto@findialab.me`; se puede configurar un destino privado mediante la propiedad `MAIL_RECIPIENT`.
 
-El correo sale desde la cuenta Google propietaria de la aplicación y utiliza la dirección del visitante como Reply-To. No deben compartirse contraseñas ni claves privadas.
+El correo sale desde la cuenta Google propietaria de la aplicación y utiliza la dirección del visitante como Reply-To. El asunto identifica a la persona solicitante y el cuerpo incluye una sección de contacto, preferencias, actividades seleccionadas, precios, fuentes oficiales, observaciones y confirmación del consentimiento. Se envía en formato HTML y texto plano. No deben compartirse contraseñas ni claves privadas.
 
 ## Precios y ordenación
 Las opciones se ordenan por prioridad de coste: oportunidades con posibilidades gratuitas primero, después tarifas municipales de bajo coste y finalmente precios que requieren confirmación. Las tarifas deportivas y de música enlazan al documento oficial consultado. Para recursos culturales no existe tarifa única, por lo que se explica que el precio depende del evento. En clubes privados se recomienda comprobar cuota, matrícula, licencia/seguro, equipación y transporte por separado.
