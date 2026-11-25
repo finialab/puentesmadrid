@@ -332,6 +332,13 @@ select:disabled{background-color:#f2f3ef;color:#8c9990}
 
 
 
+/* Verificación Cloudflare Turnstile */
+.form-security{margin:16px 0 8px;padding:14px 15px;border:1px solid #dfe7df;border-radius:12px;background:#f8faf7}
+.form-security>p:first-child{margin:0 0 10px;color:#30463b;font-size:13px}
+.form-security .cf-turnstile{min-height:65px;display:block;max-width:100%;overflow:visible}
+.form-security-note{font-size:10px;line-height:1.55;color:#718077;margin:8px 0 0}
+#sendRequest:disabled{opacity:.58;cursor:not-allowed}
+
 /* Casilla de privacidad accesible y aislada de los estilos generales de inputs */
 .list-request-card label.privacy-consent{
   display:flex!important;
