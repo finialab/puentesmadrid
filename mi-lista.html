@@ -11,7 +11,7 @@
   <meta name="robots" content="noindex,follow">
   <link rel="canonical" href="https://findialab.me/mi-lista.html">
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./assets/css/puentes.css?v=20261125-presentation-v4">
+  <link rel="stylesheet" href="./assets/css/puentes.css?v=20261125-header-polish-v6">
 </head>
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -23,20 +23,22 @@
         </span>
         <span class="brand-name">FINDIA PUENTES<span class="brand-sub">Madrid capital</span></span>
       </a>
-      <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="mainNav" aria-label="Abrir menú">☰</button>
       <nav class="main-nav" id="mainNav" aria-label="Navegación principal">
         <a href="./index.html#buscar">Actividades</a>
         <a href="./mi-lista.html" aria-current="page">Mi lista <span class="nav-count" id="savedCount">0</span></a>
         <a href="./index.html#como-funciona">Cómo funciona</a>
         <a href="./index.html#proyecto">El proyecto</a>
+      </nav>
+      <div class="header-tools">
         <label class="language-switch">
-          <span class="visually-hidden">Idioma</span>
-          <select data-language-select aria-label="Seleccionar idioma">
+          <span class="language-switch-label">Idioma</span>
+          <select id="siteLanguage" data-language-select aria-label="Seleccionar idioma">
             <option value="es">ES · Español</option>
             <option value="en">EN · English</option>
           </select>
         </label>
-      </nav>
+        <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="mainNav" aria-label="Abrir menú">☰</button>
+      </div>
     </div>
   </header>
   <main id="contenido">
@@ -151,7 +153,7 @@
       <span>Iniciativa universitaria independiente · <a href="./index.html#privacidad">Privacidad, alcance y condiciones</a></span>
     </div>
   </footer>
-  <script src="./assets/js/i18n.js?v=20261125-bilingual-v5"></script>
+  <script src="./assets/js/i18n.js?v=20261125-bilingual-v6"></script>
 <script src="./assets/js/puentes-data.js?v=20261124-form-native-fallback"></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script src="./assets/js/mi-lista.js?v=20261125-bilingual-v5"></script>

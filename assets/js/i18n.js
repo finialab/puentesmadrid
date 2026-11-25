@@ -256,11 +256,18 @@
     "Solicitud enviada | FINDIA PUENTES":"Request sent | FINDIA PUENTES",
     "Página no encontrada | FINDIA PUENTES":"Page not found | FINDIA PUENTES",
   });
+  const REVERSE = Object.create(null);
+  Object.keys(D).forEach(function (key) {
+    if (D[key] && !(D[key] in REVERSE)) REVERSE[D[key]] = key;
+  });
+  Object.keys(ATTRS).forEach(function (key) {
+    if (ATTRS[key] && !(ATTRS[key] in REVERSE)) REVERSE[ATTRS[key]] = key;
+  });
   const KEY = "findiaLanguage.v1";
   const nodeOriginal = new WeakMap();
   const attrOriginal = new WeakMap();
   let lang = "es";
-  function t(value) { return lang === "en" ? (D[value] || ATTRS[value] || value) : value; }
+  function t(value) { return lang === "en" ? (D[value] || ATTRS[value] || value) : (REVERSE[value] || value); }
   function visit(node) {
     if (node.nodeType === Node.TEXT_NODE) {
       if (!nodeOriginal.has(node)) nodeOriginal.set(node, node.nodeValue);
