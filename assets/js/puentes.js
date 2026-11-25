@@ -105,35 +105,35 @@
   function renderCard(item) {
     const saved = selected.has(item.id);
     const locality = getLocationLabel(item);
-    const isOther = locality === "Otro distrito de Madrid";
+    const isOther = locality === T("Otro distrito de Madrid");
     const priceClass = item.priceType === "free" || item.priceType === "freeOrVaries" ? " free" : "";
     const map = mapUrl(item);
     return [
       '<article class="resource-card">',
         '<div class="card-topline"><span class="card-category">', escapeHtml(categoryNames[item.category] || item.category), '</span>',
           '<span class="location-tag', isOther ? ' is-other' : '', '">', escapeHtml(locality), '</span></div>',
-        '<h3>', escapeHtml(item.title), '</h3>',
+        '<h3>', escapeHtml(T(item.title)), '</h3>',
         '<p class="card-place">', escapeHtml(item.area ? item.area + " · " : ""), escapeHtml(isEnglish() ? "District " : "Distrito "), escapeHtml(item.zone), '</p>',
-        '<p class="card-summary">', escapeHtml(item.summary), '</p>',
-        '<div class="card-activity"><strong>', escapeHtml(T("Qué puedes encontrar")), '</strong>', escapeHtml(item.offer), '</div>',
+        '<p class="card-summary">', escapeHtml(T(item.summary)), '</p>',
+        '<div class="card-activity"><strong>', escapeHtml(T("Qué puedes encontrar")), '</strong>', escapeHtml(T(item.offer)), '</div>',
         '<dl class="card-facts">',
-          '<div class="card-fact"><dt>', escapeHtml(T("Dirección")), '</dt><dd>', escapeHtml(item.address), '</dd></div>',
-          '<div class="card-fact"><dt>', escapeHtml(T("Acceso")), '</dt><dd>', escapeHtml(item.access), '</dd></div>',
-          '<div class="card-fact"><dt>', escapeHtml(T("Edad")), '</dt><dd>', escapeHtml(item.age), '</dd></div>',
+          '<div class="card-fact"><dt>', escapeHtml(T("Dirección")), '</dt><dd>', escapeHtml(T(item.address)), '</dd></div>',
+          '<div class="card-fact"><dt>', escapeHtml(T("Acceso")), '</dt><dd>', escapeHtml(T(item.access)), '</dd></div>',
+          '<div class="card-fact"><dt>', escapeHtml(T("Edad")), '</dt><dd>', escapeHtml(T(item.age)), '</dd></div>',
         '</dl>',
         '<div class="cost-panel">',
           '<div class="cost-panel-head"><strong>', escapeHtml(T("Coste orientativo")), '</strong><span class="price-pill', priceClass, '">', escapeHtml(priceBadge(item)), '</span></div>',
-          '<p class="cost-main">', escapeHtml(item.price || T("Consultar con la entidad.")), '</p>',
-          item.priceDetail ? '<p class="cost-detail">' + escapeHtml(item.priceDetail) + '</p>' : '',
-          item.extraCosts ? '<p class="cost-extras"><strong>' + escapeHtml(T("Comprueba también:")) + '</strong> ' + escapeHtml(item.extraCosts) + '</p>' : '',
+          '<p class="cost-main">', escapeHtml(T(item.price || "Consultar con la entidad.")), '</p>',
+          item.priceDetail ? '<p class="cost-detail">' + escapeHtml(T(item.priceDetail)) + '</p>' : '',
+          item.extraCosts ? '<p class="cost-extras"><strong>' + escapeHtml(T("Comprueba también:")) + '</strong> ' + escapeHtml(T(item.extraCosts)) + '</p>' : '',
           item.priceSourceUrl ? '<a class="cost-source" href="' + escapeHtml(item.priceSourceUrl) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(T("Consultar tarifas oficiales ↗")) + '</a>' : '',
         '</div>',
         '<div class="card-actions">',
           '<a class="card-action" href="', escapeHtml(item.officialUrl), '" target="_blank" rel="noopener noreferrer">', escapeHtml(T("Fuente oficial ↗")), '</a>',
           map ? '<a class="card-action" href="' + escapeHtml(map) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(T("Ver mapa ↗")) + '</a>' : '',
-          '<button class="card-action card-action-save', saved ? ' is-saved' : '', '" type="button" data-save="', escapeHtml(item.id), '" aria-pressed="', saved ? 'true' : 'false', '">', saved ? '✓ En mi lista' : '+ Añadir a mi lista', '</button>',
+          '<button class="card-action card-action-save', saved ? ' is-saved' : '', '" type="button" data-save="', escapeHtml(item.id), '" aria-pressed="', saved ? 'true' : 'false', '">', saved ? T('✓ En mi lista') : T('+ Añadir a mi lista'), '</button>',
         '</div>',
-        '<p class="card-source">', escapeHtml(T("Fuente:")), ' ', escapeHtml(item.sourceName), ' · ', escapeHtml(T("Revisión:")), ' ', escapeHtml(config.verifiedOn || "24/11/2026"), '</p>',
+        '<p class="card-source">', escapeHtml(T("Fuente:")), ' ', escapeHtml(T(item.sourceName)), ' · ', escapeHtml(T("Revisión:")), ' ', escapeHtml(config.verifiedOn || "24/11/2026"), '</p>',
       '</article>'
     ].join("");
   }
