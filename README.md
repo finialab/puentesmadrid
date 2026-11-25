@@ -7,13 +7,18 @@ El sitio está publicado actualmente en el dominio personalizado `findialab.me`.
 ## Estructura
 - `index.html`: portada, buscador, explicación del proyecto, fuentes y privacidad.
 - `mi-lista.html`: actividades guardadas y formulario de solicitud con Turnstile.
-- `gracias.html`: página estática de confirmación.
-- `assets/css/puentes.css`: estilos responsive, accesibilidad y componentes visuales.
+- `gracias.html`: confirmación del envío.
+- `404.html`: página de error.
+- `assets/css/puentes.css`: estilos responsive, accesibilidad y selector de idioma.
+- `assets/js/i18n.js`: selector español/inglés, persistencia del idioma por pestaña y traducción de contenidos estáticos.
 - `assets/js/puentes-data.js`: catálogo de recursos, distritos y configuración del correo.
-- `assets/js/puentes.js`: filtros por distrito/categoría y lista de interés.
-- `assets/js/mi-lista.js`: gestión de actividades guardadas y resumen estructurado del correo.
-- `apps-script/Code.gs`: validación del formulario, Siteverify y envío de correo.
+- `assets/js/puentes.js`: filtros por distrito/categoría, lista de interés y tarjetas traducidas.
+- `assets/js/mi-lista.js`: gestión de la lista, formulario y correo estructurado en el idioma seleccionado.
+- `apps-script/Code.gs`: validación del formulario, Siteverify y envío de correo HTML/texto en español o inglés.
 - `apps-script/appsscript.json`: permisos del proyecto de Apps Script.
+
+## Idiomas
+La interfaz ofrece Español e English en un selector visible en la navegación. La elección se conserva en `sessionStorage` durante la sesión de esa pestaña. Los resultados de búsqueda, fichas del catálogo, lista, formulario, estados del envío y correos de aviso siguen el idioma seleccionado; los textos libres escritos por la persona se mantienen en el idioma original. El catálogo conserva los nombres propios, direcciones y nombres oficiales de entidades.
 
 ## Configurar el correo y Cloudflare Turnstile
 
