@@ -215,6 +215,22 @@
     "Cuéntanos brevemente qué necesitas...":"Briefly tell us what you need..."
   };
 
+  Object.assign(D, {
+    "Quitar de mi lista":"Remove from my list",
+    "He leído y acepto el aviso de privacidad y las condiciones de uso.":"I have read and accept the privacy notice and terms of use.",
+    "Verificación de seguridad":"Security verification",
+    "NUEVA SOLICITUD DE ORIENTACIÓN — FINDIA PUENTES":"NEW GUIDANCE REQUEST — FINDIA PUENTES",
+    "Recibida el ":"Received on ",
+    "DATOS DE CONTACTO":"CONTACT DETAILS",
+    "DETALLE DE LA SOLICITUD":"REQUEST DETAILS",
+    "CONSENTIMIENTO":"CONSENT",
+    "La persona ha marcado la casilla de aceptación del aviso de privacidad y las condiciones de uso.":"The person ticked the box confirming acceptance of the privacy notice and terms of use.",
+    "Este correo se ha generado automáticamente desde https://findialab.me.":"This email was generated automatically from https://findialab.me.",
+    "FINDIA PUENTES | Actividades y acompañamiento en Madrid":"FINDIA PUENTES | Activities and support in Madrid",
+    "Mi lista | FINDIA PUENTES":"My list | FINDIA PUENTES",
+    "Solicitud enviada | FINDIA PUENTES":"Request sent | FINDIA PUENTES",
+    "Página no encontrada | FINDIA PUENTES":"Page not found | FINDIA PUENTES",
+  });
   const KEY = "findiaLanguage.v1";
   const nodeOriginal = new WeakMap();
   const attrOriginal = new WeakMap();
