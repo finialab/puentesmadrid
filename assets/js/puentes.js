@@ -30,7 +30,7 @@
   const selected = new Set(loadSavedIds());
   function persistSavedIds() {
     try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(selected))); }
-    catch (error) { showToast("No se ha podido guardar la lista en esta pestaña."); }
+    catch (error) { showToast(T("No se ha podido guardar la lista en esta pestaña.")); }
   }
   let toastTimer = null;
   const T = window.PUENTES_T || function (value) { return value; };
@@ -238,13 +238,13 @@
   menuToggle.addEventListener("click", function () {
     const open = mainNav.classList.toggle("is-open");
     menuToggle.setAttribute("aria-expanded", open ? "true" : "false");
-    menuToggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+    menuToggle.setAttribute("aria-label", open ? T("Cerrar menú") : T("Abrir menú"));
   });
   mainNav.addEventListener("click", function (event) {
     if (event.target.closest("a")) {
       mainNav.classList.remove("is-open");
       menuToggle.setAttribute("aria-expanded", "false");
-      menuToggle.setAttribute("aria-label", "Abrir menú");
+      menuToggle.setAttribute("aria-label", T("Abrir menú"));
     }
   });
 
