@@ -235,7 +235,7 @@
   const nodeOriginal = new WeakMap();
   const attrOriginal = new WeakMap();
   let lang = "es";
-  function t(value) { return lang === "en" ? (D[value] || value) : value; }
+  function t(value) { return lang === "en" ? (D[value] || ATTRS[value] || value) : value; }
   function visit(node) {
     if (node.nodeType === Node.TEXT_NODE) {
       if (!nodeOriginal.has(node)) nodeOriginal.set(node, node.nodeValue);
