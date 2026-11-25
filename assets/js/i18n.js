@@ -216,6 +216,7 @@
   };
 
   Object.assign(D, {
+    "y la":"and the",
     "Idioma":"Language",
     "Conoce cómo te acompañamos":"Learn how we support you",
     "0 actividades guardadas":"0 activities saved",
