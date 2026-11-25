@@ -151,6 +151,7 @@ function testMailDelivery() {
  */
 function doPost(e) {
   let stage = "inicio";
+  let language = "es";
   try {
     // doPost(e) solo debe ejecutarse mediante una petición HTTP POST real.
     // Si se pulsa Ejecutar en el editor, Google no pasa el evento e.
@@ -173,6 +174,7 @@ function doPost(e) {
 
     stage = "lectura de campos";
     const p = getPostParameters_(e);
+    language = String(p.lang || "es").toLowerCase() === "en" ? "en" : "es";
     if (Object.keys(p).length === 0) {
       console.error("HTTP POST received but no form fields were parsed. postType=" +
         String(e.postData.type || "unknown") + "; postLength=" + String(e.postData.length || 0));
@@ -214,7 +216,6 @@ function doPost(e) {
     const email = cleanEmail_(p.email);
     const message = cleanMessage_(p.message, CONFIG.maxMessageLength) ||
       buildMessageFromParameters_(p);
-    const language = String(p.lang || "es").toLowerCase() === "en" ? "en" : "es";
     const consent = String(p.consent || "").toLowerCase();
 
     if (name.length < 2 || !email || message.length < 20 || consent !== "on") {
@@ -575,13 +576,37 @@ function isRateLimited_(email) {
   }
 }
 
-function renderPage_(title, message, success) {
+function renderPage_(title, message, success, language) {
+  const english = String(language || "es").toLowerCase() === "en";
+  const translations = {
+    "Solicitud demasiado grande": "Request too large",
+    "El formulario supera el tamaño permitido. Reduce el texto e inténtalo de nuevo.": "The form exceeds the allowed size. Please shorten your message and try again.",
+    "Formulario sin datos": "Form submitted without data",
+    "El servidor ha recibido una petición POST, pero no ha podido leer los campos. Recarga Mi lista e inténtalo de nuevo.": "The server received the form submission but could not read its fields. Reload My list and try again.",
+    "Solicitud recibida": "Request received",
+    "Gracias. Puedes volver a FINDIA PUENTES.": "Thank you. You can return to FINDIA PUENTES.",
+    "No se ha podido verificar la solicitud": "We could not verify your request",
+    "La protección de seguridad todavía no está configurada en el servidor. No se ha enviado la solicitud; inténtalo más tarde.": "The security protection is not yet configured on the server. Your request has not been sent; please try again later.",
+    "No se ha podido validar la verificación de seguridad. Recarga el formulario, completa de nuevo la comprobación e inténtalo otra vez.": "The security check could not be validated. Reload the form, complete the check again and retry.",
+    "No se ha podido enviar": "We could not send your request",
+    "Faltan datos obligatorios o no has marcado la casilla de aceptación del aviso de privacidad y las condiciones de uso.": "Required information is missing, or you have not accepted the privacy notice and terms of use.",
+    "Espera un momento": "Please wait a moment",
+    "Ya se ha recibido una solicitud reciente desde este correo. Espera unos segundos antes de volver a enviarla.": "A recent request has already been received from this email address. Please wait a few seconds before submitting again.",
+    "Servicio temporalmente no disponible": "Service temporarily unavailable",
+    "La cuenta de correo ha alcanzado su límite diario de envíos. Inténtalo más tarde o contacta directamente con FINDIA PUENTES.": "The email account has reached its daily sending limit. Please try again later or contact FINDIA PUENTES directly.",
+    "¡Solicitud enviada!": "Request sent!",
+    "Tu solicitud se ha enviado correctamente al equipo de FINDIA PUENTES. Puedes volver a la web.": "Your request has been sent successfully to the FINDIA PUENTES team. You can return to the website.",
+    "Prueba no válida": "Invalid test",
+    "No ejecutes doPost desde el botón Ejecutar del editor. Para comprobar el correo usa testMailDelivery; para comprobar el formulario, envía una solicitud desde findialab.me.": "Do not run doPost using the editor's Run button. To test email delivery, use testMailDelivery; to test the form, submit a request from findialab.me."
+  };
+  const displayTitle = english ? (translations[title] || title) : title;
+  const displayMessage = english ? (translations[message] || message) : message;
   const color = success ? "#24634e" : "#a34335";
   const html = [
     "<!doctype html>",
-    '<html lang="es"><head><meta charset="utf-8">',
+    '<html lang="' + (english ? "en" : "es") + '"><head><meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
-    "<title>" + escapeHtml_(title) + " | FINDIA PUENTES</title>",
+    "<title>" + escapeHtml_(displayTitle) + " | FINDIA PUENTES</title>",
     "<style>",
     "body{margin:0;background:#f4f6f1;color:#24352f;font:16px/1.6 Arial,sans-serif}",
     ".wrap{max-width:620px;margin:8vh auto;padding:24px}",
@@ -594,14 +619,14 @@ function renderPage_(title, message, success) {
     "</style></head><body><main class='wrap'><section class='card'>",
     "<div class='brand'>FINDIA PUENTES · MADRID</div>",
     "<div class='mark'>" + (success ? "✓" : "!") + "</div>",
-    "<h1>" + escapeHtml_(title) + "</h1>",
-    "<p>" + escapeHtml_(message) + "</p>",
-    '<a href="' + CONFIG.siteUrl + '/mi-lista.html#formulario">Volver a FINDIA PUENTES</a>',
+    "<h1>" + escapeHtml_(displayTitle) + "</h1>",
+    "<p>" + escapeHtml_(displayMessage) + "</p>",
+    '<a href="' + CONFIG.siteUrl + '/mi-lista.html#formulario">' + (english ? "Return to FINDIA PUENTES" : "Volver a FINDIA PUENTES") + "</a>",
     "</section></main></body></html>"
   ].join("");
 
   return HtmlService.createHtmlOutput(html)
-    .setTitle(title + " | FINDIA PUENTES");
+    .setTitle(displayTitle + " | FINDIA PUENTES");
 }
 
 function escapeHtml_(value) {
