@@ -244,23 +244,33 @@ function doPost(e) {
     }
 
     stage = "preparación del correo";
+    const receivedAt = Utilities.formatDate(new Date(), "Europe/Madrid", "dd/MM/yyyy 'a las' HH:mm");
     const body = [
-      message,
+      "NUEVA SOLICITUD DE ORIENTACIÓN — FINDIA PUENTES",
+      "Recibida el " + receivedAt,
       "",
-      "------------------------------",
       "DATOS DE CONTACTO",
       "Nombre: " + name,
-      "Correo de respuesta: " + email,
+      "Correo electrónico: " + email,
       "",
-      "Solicitud recibida desde https://findialab.me"
+      "DETALLE DE LA SOLICITUD",
+      message,
+      "",
+      "CONSENTIMIENTO",
+      "La persona ha marcado la casilla de aceptación del aviso de privacidad y las condiciones de uso.",
+      "",
+      "Este correo se ha generado automáticamente desde https://findialab.me."
     ].join("\n");
+
+    const htmlBody = formatEmailHtml_(body);
 
     stage = "envío con MailApp";
     const recipient = getRecipient_();
     MailApp.sendEmail({
       to: recipient,
-      subject: "Nueva solicitud de orientación — FINDIA PUENTES",
+      subject: "Nueva solicitud FINDIA PUENTES — " + name,
       body: body,
+      htmlBody: htmlBody,
       name: "FINDIA PUENTES",
       replyTo: email
     });
@@ -347,6 +357,25 @@ function verifyTurnstile_(token) {
     console.error("Turnstile Siteverify request failed: " + String(error));
     return { success: false, reason: "verification-unavailable" };
   }
+}
+
+/**
+ * Versión HTML del correo de aviso. El contenido del formulario se escapa
+ * antes de introducirlo en HTML para evitar que se interprete como marcado.
+ */
+function formatEmailHtml_(plainText) {
+  const safeText = escapeHtml_(plainText);
+  return [
+    "<!doctype html>",
+    '<html lang="es"><body style="margin:0;padding:28px;background:#f4f6f1;font-family:Arial,sans-serif;color:#263b32;">',
+    '<div style="max-width:700px;margin:0 auto;background:#ffffff;border:1px solid #dfe7df;border-radius:16px;overflow:hidden;">',
+    '<div style="padding:22px 28px;background:#173f39;color:#ffffff;font-size:15px;font-weight:700;letter-spacing:2px;">FINDIA PUENTES</div>',
+    '<div style="padding:26px 28px;">',
+    '<h1 style="margin:0 0 18px;font-size:22px;line-height:1.3;color:#173f39;">Nueva solicitud de orientación</h1>',
+    '<pre style="margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.75 Arial,sans-serif;color:#40544a;">' + safeText + "</pre>",
+    '<p style="margin:24px 0 0;padding-top:16px;border-top:1px solid #e5ebe5;font-size:12px;color:#718078;">Puedes responder directamente a este correo para contactar con la persona solicitante.</p>',
+    "</div></div></body></html>"
+  ].join("");
 }
 
 function getPostParameters_(event) {
