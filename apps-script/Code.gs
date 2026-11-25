@@ -364,15 +364,46 @@ function verifyTurnstile_(token) {
  * antes de introducirlo en HTML para evitar que se interprete como marcado.
  */
 function formatEmailHtml_(plainText) {
-  const safeText = escapeHtml_(plainText);
+  const lines = String(plainText || "").split(/\r?\n/);
+  const title = escapeHtml_(lines.shift() || "Nueva solicitud de FINDIA PUENTES");
+  const headings = [
+    "DATOS DE CONTACTO",
+    "DETALLE DE LA SOLICITUD",
+    "RESUMEN DE LA SOLICITUD",
+    "PREFERENCIAS Y NECESIDADES",
+    "ACTIVIDADES SELECCIONADAS",
+    "OBSERVACIONES DE LA PERSONA",
+    "CONSENTIMIENTO"
+  ];
+
+  const content = lines.map(function (line) {
+    const trimmed = line.trim();
+    if (!trimmed) return '<div style="height:7px;"></div>';
+
+    const safe = escapeHtml_(trimmed);
+    if (headings.indexOf(trimmed) !== -1) {
+      return '<h2 style="margin:20px 0 8px;padding-bottom:7px;border-bottom:1px solid #e5ebe5;font-size:13px;letter-spacing:.7px;color:#285e52;">' + safe + "</h2>";
+    }
+    if (/^\d+\.\s/.test(trimmed)) {
+      return '<h3 style="margin:13px 0 5px;font-size:14px;color:#173f39;">' + safe + "</h3>";
+    }
+    if (/^Recibida el /.test(trimmed)) {
+      return '<p style="margin:0 0 14px;font-size:12px;color:#7a8980;">' + safe + "</p>";
+    }
+    if (/^   /.test(line)) {
+      return '<p style="margin:3px 0 3px 14px;font-size:13px;line-height:1.6;color:#53665c;">' + safe + "</p>";
+    }
+    return '<p style="margin:5px 0;font-size:13px;line-height:1.65;color:#40544a;">' + safe + "</p>";
+  }).join("");
+
   return [
     "<!doctype html>",
     '<html lang="es"><body style="margin:0;padding:28px;background:#f4f6f1;font-family:Arial,sans-serif;color:#263b32;">',
     '<div style="max-width:700px;margin:0 auto;background:#ffffff;border:1px solid #dfe7df;border-radius:16px;overflow:hidden;">',
-    '<div style="padding:22px 28px;background:#173f39;color:#ffffff;font-size:15px;font-weight:700;letter-spacing:2px;">FINDIA PUENTES</div>',
+    '<div style="padding:20px 28px;background:#173f39;color:#ffffff;font-size:15px;font-weight:700;letter-spacing:2px;">FINDIA PUENTES</div>',
     '<div style="padding:26px 28px;">',
-    '<h1 style="margin:0 0 18px;font-size:22px;line-height:1.3;color:#173f39;">Nueva solicitud de orientación</h1>',
-    '<pre style="margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.75 Arial,sans-serif;color:#40544a;">' + safeText + "</pre>",
+    '<h1 style="margin:0 0 8px;font-size:21px;line-height:1.3;color:#173f39;">' + title + "</h1>",
+    content,
     '<p style="margin:24px 0 0;padding-top:16px;border-top:1px solid #e5ebe5;font-size:12px;color:#718078;">Puedes responder directamente a este correo para contactar con la persona solicitante.</p>',
     "</div></div></body></html>"
   ].join("");
