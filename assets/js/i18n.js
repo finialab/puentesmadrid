@@ -170,6 +170,38 @@
     "Escuela municipal de música del distrito de Tetuán.":"Municipal music school in Tetuán district.",
     "Enseñanza musical municipal. Consulta con el centro la oferta instrumental, los grupos y el proceso de acceso.":"Municipal music tuition. Ask the centre about instruments, groups and the admissions process.",
     "Teléfono 913 118 748. Correo municipal: emmvmontalban@madrid.es.":"Phone: +34 913 118 748. Municipal email: emmvmontalban@madrid.es."
+
+    "FINDIA PUENTES | Actividades y acompañamiento en Madrid":"FINDIA PUENTES | Activities and support in Madrid",
+    "Mi lista | FINDIA PUENTES":"My list | FINDIA PUENTES",
+    "Solicitud enviada | FINDIA PUENTES":"Request sent | FINDIA PUENTES",
+    "Página no encontrada | FINDIA PUENTES":"Page not found | FINDIA PUENTES",
+    "Madrid capital":"Madrid city",
+    "Programación del Centro Cultural Lavapiés":"Centro Cultural Lavapiés — Cultural programme",
+    "Centro Cultural Casa del Reloj":"Casa del Reloj Cultural Centre",
+    "Centro Cultural Nicolás Salmerón":"Nicolás Salmerón Cultural Centre",
+    "Centro Cultural Eduardo Úrculo":"Eduardo Úrculo Cultural Centre",
+    "Centro Cultural Antonio Machado":"Antonio Machado Cultural Centre",
+    "Centro Deportivo Municipal Escuelas de San Antón":"Escuelas de San Antón Municipal Sports Centre",
+    "Centro Deportivo Municipal Centro Integrado Arganzuela":"Arganzuela Integrated Municipal Sports Centre",
+    "Centro Deportivo Municipal Daoíz y Velarde 1":"Daoíz y Velarde 1 Municipal Sports Centre",
+    "Centro Deportivo Municipal Cea Bermúdez":"Cea Bermúdez Municipal Sports Centre",
+    "Centro Deportivo Municipal Triángulo de Oro":"Triángulo de Oro Municipal Sports Centre",
+    "Escuela Municipal de Música y Danza María Dolores Pradera":"María Dolores Pradera Municipal Music and Dance School",
+    "Escuela Municipal de Música Almudena Cano":"Almudena Cano Municipal Music School",
+    "Escuela Municipal de Música y Danza Plácido Domingo":"Plácido Domingo Municipal Music and Dance School",
+    "Escuela Municipal de Música María Rodrigo":"María Rodrigo Municipal Music School",
+    "Escuela Municipal de Música Manuel Vázquez Montalbán":"Manuel Vázquez Montalbán Municipal Music School",
+    "Tarifa joven municipal 2026 (15–26 años): 2,40 € por sesión abierta o 10,40 €/mes por una actividad cerrada de 1 sesión semanal.":"2026 municipal youth rate (ages 15–26): €2.40 per open session or €10.40/month for a closed activity with one weekly session.",
+    "Tarifas municipales 2026–2027 por asignatura: 14,74 €, 29,48 € o 40,60 €, según la materia.":"2026–2027 municipal fees per subject: €14.74, €29.48 or €40.60, depending on the subject.",
+    "El centro no tiene una tarifa única. Algunas actividades o espectáculos pueden ser gratuitos y otros pueden requerir entrada o inscripción. No se garantiza que una actividad concreta sea gratuita.":"The centre does not have a single fee. Some activities or performances may be free, while others may require a ticket or registration. A specific activity is not guaranteed to be free.",
+    "Distrito ":"District ",
+    "Última revisión de esta selección: 24 de noviembre de 2026.":"Last review of this selection: 24 November 2026.",
+    "Esta web no tiene cuentas de usuario, no utiliza GPS ni incorpora analítica. La lista de actividades se mantiene en el almacenamiento de sesión de tu navegador. Cuando envías el formulario, los datos que escribes (nombre, correo y mensaje) se transmiten a Google Apps Script y se utilizan para responder a tu solicitud por correo. El formulario incorpora Cloudflare Turnstile: el navegador obtiene un token y Google Apps Script lo valida con Cloudflare Siteverify antes de aceptar el envío. Para funcionar, el proyecto de Apps Script debe tener configurada la propiedad privada TURNSTILE_SECRET_KEY y una implementación publicada con los permisos necesarios. También se aplican validación de campos, un campo trampa y límites de frecuencia. La web no guarda el contenido de solicitudes en una base de datos propia, aunque los datos enviados quedan en el buzón de correo del proyecto y sujetos a sus plazos de conservación. Los controles técnicos mantienen temporalmente un identificador hash del correo y un contador diario para limitar reenvíos. No incluyas documentación, datos bancarios, información sanitaria ni detalles sensibles sobre tu situación administrativa. Antes de iniciar un piloto con participantes, el equipo debe completar la información del responsable del tratamiento, la base jurídica, los plazos de conservación y el canal para ejercer derechos. Consulta la":"This website does not have user accounts, use GPS or include analytics. Your activity list is kept in your browser session storage. When you submit the form, the information you provide (name, email and message) is transmitted to Google Apps Script and used to reply to your request by email. The form includes Cloudflare Turnstile: your browser receives a token and Google Apps Script validates it with Cloudflare Siteverify before accepting the submission. The Apps Script project must have the private TURNSTILE_SECRET_KEY property configured and a published deployment with the required permissions. The form also uses field validation, a honeypot and rate limits. The website does not store request contents in its own database, although submitted data remains in the project's email inbox and is subject to its retention period. Technical controls temporarily keep a hashed email identifier and a daily counter to limit repeated submissions. Do not include identity documents, bank details, health information or sensitive details about your administrative situation. Before a pilot with participants begins, the team must complete the information about the data controller, legal basis, retention periods and how to exercise data-protection rights. See",
+    "información de Google Apps Script":"Google Apps Script information",
+    " y la":" and the",
+    "política de privacidad de Cloudflare":"Cloudflare Privacy Policy",
+    "No tienes que buscarlo todo a solas":"You do not have to figure everything out alone",
+    "Revisión:":"Review:"
   };
 
   const ATTRS = {
