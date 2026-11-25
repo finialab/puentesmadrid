@@ -680,3 +680,8 @@ select,input,textarea{min-height:46px}
 
 /* Evita que el CTA comprima la navegación en anchos intermedios */
 @media(max-width:1120px){.nav-cta{display:none!important}}
+
+/* En escritorio, el selector queda en el extremo derecho de la cabecera */
+.header-tools .nav-cta{order:1}
+.header-tools .language-switch{order:2}
+.header-tools .menu-toggle{order:3}
