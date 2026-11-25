@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; frame-src 'none'; form-action 'self' https://script.google.com; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; form-action 'self' https://script.google.com; upgrade-insecure-requests">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#173f39">
@@ -11,7 +11,7 @@
   <meta name="robots" content="noindex,follow">
   <link rel="canonical" href="https://findialab.me/mi-lista.html">
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./assets/css/puentes.css?v=20261124-security-v1">
+  <link rel="stylesheet" href="./assets/css/puentes.css?v=20261124-turnstile-v1">
 </head>
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -118,6 +118,11 @@
             </span>
           </label>
 
+          <div class="form-security" aria-label="Verificación de seguridad">
+            <p><strong>Verificación de seguridad</strong></p>
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAAGQ-SJsRs4heVoKD" data-action="submit_request" data-theme="light" data-size="flexible"></div>
+            <p class="form-security-note">Completa esta verificación para proteger el formulario frente a envíos automatizados.</p>
+          </div>
           <button class="button button-primary button-block" id="sendRequest" type="submit">Enviar solicitud</button>
           <p class="list-request-status" id="requestStatus" role="status" aria-live="polite">Te responderemos a la dirección de correo que indiques. No incluyas datos bancarios, información sanitaria ni documentación sensible.</p>
         </form>
@@ -139,6 +144,7 @@
     </div>
   </footer>
   <script src="./assets/js/puentes-data.js?v=20261124-form-native-fallback"></script>
-  <script src="./assets/js/mi-lista.js?v=20261124-privacy-checkbox-v2"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script src="./assets/js/mi-lista.js?v=20261124-turnstile-v1"></script>
 </body>
 </html>
