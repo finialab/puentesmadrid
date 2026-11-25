@@ -216,6 +216,11 @@
   };
 
   Object.assign(D, {
+    "Idioma":"Language",
+    "Conoce cómo te acompañamos":"Learn how we support you",
+    "0 actividades guardadas":"0 activities saved",
+    "Cuéntanos qué necesitas.":"Tell us what you need.",
+    " y la":" and the",
     "Atención telefónica de lunes a viernes, de 17:00 a 20:00, según el directorio municipal. La admisión depende del proceso anual.":"Telephone enquiries: Monday to Friday, 17:00–20:00, according to the municipal directory. Admission depends on the annual application process.",
     "← Volver a actividades":"← Back to activities",
     "Volver a actividades ↑":"Back to activities ↑",
