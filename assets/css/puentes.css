@@ -495,7 +495,7 @@ textarea:focus-visible{
   justify-content:flex-end;
   flex:0 0 auto;
   gap:10px;
-  margin-left:4px;
+  margin-left:auto;
 }
 .language-switch{
   display:inline-flex;
@@ -610,7 +610,7 @@ select,input,textarea{min-height:46px}
 }
 .list-request-card label:not(.privacy-consent){margin:15px 0 7px}
 .list-request-status{line-height:1.65}
-@media(max-width:900px){
+@media(max-width:960px){
   .nav-wrap{min-height:70px}
   .main-nav{
     display:none;
@@ -677,3 +677,6 @@ select,input,textarea{min-height:46px}
   .language-switch select{width:70px;min-width:70px}
   .menu-toggle{width:36px;min-width:36px;height:36px}
 }
+
+/* Evita que el CTA comprima la navegación en anchos intermedios */
+@media(max-width:1120px){.nav-cta{display:none!important}}
