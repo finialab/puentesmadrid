@@ -11,7 +11,7 @@
 
 const CONFIG = Object.freeze({
   defaultRecipient: "contacto@findialab.me",
-  buildId: "FINDIA-EMAIL-20261124-NATIVEFORM-FALLBACK",
+  buildId: "FINDIA-EMAIL-20261124-TURNSTILE-SITEVERIFY",
   siteUrl: "https://findialab.me",
   formUrl: "https://findialab.me/mi-lista.html#formulario",
   cooldownSeconds: 60,
@@ -39,8 +39,68 @@ function doGet() {
  */
 function authorizeServices() {
   const remaining = MailApp.getRemainingDailyQuota();
+  // Fuerza la autorización de UrlFetchApp necesaria para validar Turnstile
+  // en el servidor. Esta llamada no envía correo ni utiliza claves privadas.
+  const fetchCheck = UrlFetchApp.fetch("https://www.google.com/generate_204", {
+    method: "get",
+    muteHttpExceptions: true
+  });
   Logger.log("Permiso de envío de correo comprobado. Cuota diaria disponible: " + remaining);
+  Logger.log("Permiso de solicitudes externas comprobado. HTTP " + fetchCheck.getResponseCode());
   return remaining;
+}
+
+/**
+ * Diagnóstico de conexión con Cloudflare Siteverify.
+ * Ejecutar manualmente DESPUÉS de guardar TURNSTILE_SECRET_KEY.
+ * Usa un token deliberadamente inválido: el resultado esperado es
+ * invalid-input-response. Así se confirma que Cloudflare recibió la llamada
+ * y aceptó la clave secreta, sin imprimir ni revelar esa clave.
+ */
+function testTurnstileConnection() {
+  const secret = String(
+    PropertiesService.getScriptProperties().getProperty("TURNSTILE_SECRET_KEY") || ""
+  ).trim();
+
+  if (!secret) {
+    throw new Error(
+      "Falta la propiedad TURNSTILE_SECRET_KEY en las Propiedades de la secuencia de comandos de ESTE proyecto."
+    );
+  }
+
+  const response = UrlFetchApp.fetch(
+    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    {
+      method: "post",
+      payload: {
+        secret: secret,
+        response: "diagnostic-invalid-token"
+      },
+      muteHttpExceptions: true
+    }
+  );
+
+  if (response.getResponseCode() !== 200) {
+    throw new Error("Cloudflare Siteverify respondió HTTP " + response.getResponseCode() + ".");
+  }
+
+  const result = JSON.parse(response.getContentText() || "{}");
+  const codes = Array.isArray(result["error-codes"]) ? result["error-codes"] : [];
+
+  if (codes.indexOf("invalid-input-secret") !== -1 ||
+      codes.indexOf("missing-input-secret") !== -1) {
+    throw new Error(
+      "Cloudflare ha rechazado la clave secreta. Comprueba que has copiado la Secret Key del widget FINDIA PUENTES."
+    );
+  }
+
+  if (codes.indexOf("invalid-input-response") !== -1) {
+    Logger.log("OK: Apps Script ha llamado a Cloudflare Siteverify y la clave secreta ha sido aceptada. El token de diagnóstico era inválido de forma intencionada.");
+    return "Conexión con Cloudflare correcta. La clave secreta está siendo aceptada y Siteverify ha recibido la llamada.";
+  }
+
+  Logger.log("Respuesta Siteverify: " + JSON.stringify({success: result.success, errorCodes: codes}));
+  return "Cloudflare ha respondido. Revisa el registro de ejecución para ver los códigos devueltos.";
 }
 
 /**
@@ -136,8 +196,19 @@ function doPost(e) {
       );
     }
 
-    // El formulario usa POST nativo y no depende de servicios externos.
-    // El campo honeypot y los límites de envío se validan en el servidor.
+    // Verificación anti-bots obligatoria en servidor.
+    // La clave secreta solo se lee de Script Properties; nunca del navegador.
+    stage = "verificación Cloudflare Turnstile";
+    const turnstileCheck = verifyTurnstile_(p["cf-turnstile-response"]);
+    if (!turnstileCheck.success) {
+      const message = turnstileCheck.reason === "not-configured"
+        ? "La protección de seguridad todavía no está configurada en el servidor. No se ha enviado la solicitud; inténtalo más tarde."
+        : "No se ha podido validar la verificación de seguridad. Recarga el formulario, completa de nuevo la comprobación e inténtalo otra vez.";
+      return renderPage_("No se ha podido verificar la solicitud", message, false);
+    }
+
+    // El campo honeypot, la verificación de Cloudflare y los límites
+    // de envío se validan en el servidor.
     stage = "validación de datos";
     const name = cleanText_(p.name, 80);
     const email = cleanEmail_(p.email);
@@ -218,6 +289,66 @@ function doPost(e) {
  * Admite los campos ya analizados por Apps Script y, como respaldo,
  * el cuerpo application/x-www-form-urlencoded o JSON.
  */
+/**
+ * Valida el token de Turnstile contra el servicio oficial Siteverify.
+ * TURNSTILE_SECRET_KEY debe configurarse en Apps Script → Project Settings
+ * → Script Properties. Nunca guardar esta clave en el repositorio.
+ */
+function verifyTurnstile_(token) {
+  const secret = String(
+    PropertiesService.getScriptProperties().getProperty("TURNSTILE_SECRET_KEY") || ""
+  ).trim();
+
+  if (!secret) {
+    console.error("Turnstile is not configured: missing TURNSTILE_SECRET_KEY Script Property.");
+    return { success: false, reason: "not-configured" };
+  }
+
+  const responseToken = String(token || "").trim();
+  if (!responseToken || responseToken.length > 2048) {
+    console.warn("Turnstile token is missing or has an invalid length.");
+    return { success: false, reason: "invalid-token" };
+  }
+
+  try {
+    const response = UrlFetchApp.fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "post",
+        payload: {
+          secret: secret,
+          response: responseToken
+        },
+        muteHttpExceptions: true
+      }
+    );
+
+    if (response.getResponseCode() !== 200) {
+      console.error("Turnstile Siteverify returned HTTP " + response.getResponseCode());
+      return { success: false, reason: "verification-unavailable" };
+    }
+
+    const result = JSON.parse(response.getContentText() || "{}");
+    const allowedHostnames = ["findialab.me"];
+    const valid = result.success === true &&
+      allowedHostnames.indexOf(String(result.hostname || "").toLowerCase()) !== -1 &&
+      String(result.action || "") === "submit_request";
+
+    if (!valid) {
+      const codes = Array.isArray(result["error-codes"])
+        ? result["error-codes"].join(",")
+        : "validation-failed";
+      console.warn("Turnstile validation rejected. Codes=" + codes);
+      return { success: false, reason: "invalid-token" };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Turnstile Siteverify request failed: " + String(error));
+    return { success: false, reason: "verification-unavailable" };
+  }
+}
+
 function getPostParameters_(event) {
   const result = {};
   if (!event) return result;
