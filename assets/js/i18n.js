@@ -169,8 +169,7 @@
     "Teléfono 915 152 351. Correo municipal: emmrodrigo@madrid.es.":"Phone: +34 915 152 351. Municipal email: emmrodrigo@madrid.es.",
     "Escuela municipal de música del distrito de Tetuán.":"Municipal music school in Tetuán district.",
     "Enseñanza musical municipal. Consulta con el centro la oferta instrumental, los grupos y el proceso de acceso.":"Municipal music tuition. Ask the centre about instruments, groups and the admissions process.",
-    "Teléfono 913 118 748. Correo municipal: emmvmontalban@madrid.es.":"Phone: +34 913 118 748. Municipal email: emmvmontalban@madrid.es."
-
+    "Teléfono 913 118 748. Correo municipal: emmvmontalban@madrid.es.":"Phone: +34 913 118 748. Municipal email: emmvmontalban@madrid.es.",
     "FINDIA PUENTES | Actividades y acompañamiento en Madrid":"FINDIA PUENTES | Activities and support in Madrid",
     "Mi lista | FINDIA PUENTES":"My list | FINDIA PUENTES",
     "Solicitud enviada | FINDIA PUENTES":"Request sent | FINDIA PUENTES",
