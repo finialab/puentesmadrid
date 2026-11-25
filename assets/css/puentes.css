@@ -434,3 +434,29 @@ select:disabled{background-color:#f2f3ef;color:#8c9990}
   text-decoration:underline!important;
   text-underline-offset:3px!important;
 }
+
+/* Detalles de presentación y accesibilidad */
+a:focus-visible,
+button:focus-visible,
+input:not(.privacy-consent__input):focus-visible,
+select:focus-visible,
+textarea:focus-visible{
+  outline:3px solid #e6b860;
+  outline-offset:3px;
+}
+.resource-card,
+.saved-activity-card{
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.resource-card:hover,
+.saved-activity-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 20px 42px rgba(22,53,47,.12);
+  border-color:#cddbd0;
+}
+@media(prefers-reduced-motion:reduce){
+  .resource-card,
+  .saved-activity-card{transition:none}
+  .resource-card:hover,
+  .saved-activity-card:hover{transform:none}
+}
