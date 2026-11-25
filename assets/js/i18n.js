@@ -216,6 +216,11 @@
   };
 
   Object.assign(D, {
+    "Atención telefónica de lunes a viernes, de 17:00 a 20:00, según el directorio municipal. La admisión depende del proceso anual.":"Telephone enquiries: Monday to Friday, 17:00–20:00, according to the municipal directory. Admission depends on the annual application process.",
+    "← Volver a actividades":"← Back to activities",
+    "Volver a actividades ↑":"Back to activities ↑",
+    "Privacidad y condiciones":"Privacy and terms",
+    "El catálogo se está actualizando.":"The catalogue is being updated.",
     "Quitar de mi lista":"Remove from my list",
     "He leído y acepto el aviso de privacidad y las condiciones de uso.":"I have read and accept the privacy notice and terms of use.",
     "Verificación de seguridad":"Security verification",
