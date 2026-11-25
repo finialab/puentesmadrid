@@ -10,21 +10,27 @@ El sitio está publicado actualmente en el dominio personalizado `findialab.me`.
 - `assets/js/puentes-data.js`: catálogo de recursos, distritos y configuración del correo.
 - `assets/js/puentes.js`: filtros por distrito/categoría, lista de interés y formulario de contacto.
 
-## Configurar el correo de contacto
-El formulario envía sus datos mediante un POST HTML nativo a una aplicación web de Google Apps Script. El script utiliza el servicio oficial MailApp y remite cada solicitud a un destinatario fijo.
+## Configurar el correo y Cloudflare Turnstile
 
-1. Abrir https://script.google.com/home/projects/create con la cuenta Google que enviará las solicitudes.
-2. Copiar apps-script/Code.gs al archivo Code.gs del proyecto. En el editor, mostrar el archivo de manifiesto appsscript.json y sustituirlo por el contenido del repositorio.
-3. Seleccionar y ejecutar authorizeServices una vez; conceder el permiso para enviar correo.
-4. En Deploy → New deployment → Web app, seleccionar Execute as: Me y Who has access: Anyone. Publicar y copiar la URL terminada en /exec.
-5. Comprobar que esa URL aparece en submissionEndpoint dentro de assets/js/puentes-data.js y en el atributo action del formulario de mi-lista.html. El destinatario por defecto es contacto@findialab.me.
-6. Cada vez que se cambie Code.gs, abrir Deploy → Manage deployments → Edit → New version → Deploy. Guardar el código en el editor no actualiza por sí solo la versión publicada.
+El formulario envía los datos mediante POST HTML nativo a una aplicación web de Google Apps Script. El script usa MailApp y solo envía la solicitud después de validar el token de Cloudflare Turnstile con Siteverify.
 
-El botón utiliza el POST nativo del navegador; no depende de AJAX, de una clave Turnstile ni de un servicio de terceros. El formulario también incluye un campo trampa, validación de datos, una casilla obligatoria de aceptación del aviso de privacidad y las condiciones de uso, un máximo de 30 correos diarios, una pausa global de ocho segundos y un envío por dirección cada 60 segundos. Si el JavaScript de la página no carga, el servidor construye un mensaje alternativo con los campos rellenados.
+1. Usa el proyecto de Apps Script cuyo despliegue termina en la URL configurada en `submissionEndpoint` de `assets/js/puentes-data.js`. No crees un proyecto nuevo si el endpoint actual ya está vinculado al formulario.
+2. Copia `apps-script/Code.gs` y `apps-script/appsscript.json` de este repositorio a ese proyecto. El manifiesto debe conservar los permisos `script.send_mail` y `script.external_request`.
+3. En Configuración del proyecto → Propiedades de la secuencia de comandos, crea `TURNSTILE_SECRET_KEY` y pega como valor la **Secret Key** del widget FINDIA PUENTES de Cloudflare. No uses la Sitekey pública como valor. No guardes nunca la clave secreta en este repositorio ni en JavaScript/HTML público.
+4. Ejecuta `authorizeServices` desde el editor y concede los permisos solicitados.
+5. Ejecuta `testTurnstileConnection`. El resultado esperado es: “Conexión con Cloudflare correcta”. La prueba envía un token deliberadamente inválido para confirmar que Apps Script alcanza Siteverify y que Cloudflare acepta la clave secreta; no envía ningún correo.
+6. En Cloudflare, el widget debe autorizar el hostname `findialab.me`. El formulario envía la acción `submit_request`; el servidor comprueba ambos valores.
+7. En Implementar → Gestionar implementaciones → Editar, selecciona Nueva versión y pulsa Implementar. Actualizar el código del editor no modifica por sí solo la versión activa. Mantén el mismo despliegue para conservar la URL /exec que ya usa la web.
+8. Enviar una solicitud de prueba desde `https://findialab.me/mi-lista.html` y comprobar que llega el correo. Solo entonces Cloudflare registrará la llamada real del formulario en sus métricas.
 
-Para una prueba de entrega independiente, ejecutar manualmente testMailDelivery desde el editor; envía un único correo de prueba al destinatario actual. Si se prefiere entregar directamente a otro buzón y evitar el alias/reenvío del dominio, añadir la propiedad privada MAIL_RECIPIENT en Script Properties. No guardar direcciones personales ni secretos en el repositorio.
+Si `testTurnstileConnection` indica que falta la propiedad, se ha añadido en otro proyecto o con otro nombre. Si indica que Cloudflare rechaza la clave, revisa que sea la Secret Key del mismo widget. Si el diagnóstico funciona pero el formulario no, comprueba la versión desplegada, la URL /exec, el token `cf-turnstile-response`, hostname y acción.
 
-El correo sale desde la cuenta Google propietaria de la aplicación y utiliza la dirección del visitante como Reply-To. La publicación de una nueva versión de Apps Script y la autorización del correo requieren una acción del propietario de esa cuenta. No deben compartirse contraseñas ni claves privadas.
+El formulario también incluye un campo trampa, validación de datos, casilla obligatoria de privacidad, un máximo de 30 correos diarios, una pausa global de ocho segundos y un envío por dirección cada 60 segundos. Si el JavaScript de la página no carga, el servidor puede construir un mensaje alternativo, pero no puede saltarse la validación obligatoria de Turnstile.
+
+Para una prueba de entrega independiente, ejecutar manualmente `testMailDelivery`; envía un único correo al destinatario actual. El destino por defecto es `contacto@findialab.me`; se puede configurar un destino privado mediante la propiedad `MAIL_RECIPIENT`.
+
+El correo sale desde la cuenta Google propietaria de la aplicación y utiliza la dirección del visitante como Reply-To. No deben compartirse contraseñas ni claves privadas.
+
 ## Precios y ordenación
 Las opciones se ordenan por prioridad de coste: oportunidades con posibilidades gratuitas primero, después tarifas municipales de bajo coste y finalmente precios que requieren confirmación. Las tarifas deportivas y de música enlazan al documento oficial consultado. Para recursos culturales no existe tarifa única, por lo que se explica que el precio depende del evento. En clubes privados se recomienda comprobar cuota, matrícula, licencia/seguro, equipación y transporte por separado.
 
