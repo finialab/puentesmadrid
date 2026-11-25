@@ -29,6 +29,13 @@
         <a href="./mi-lista.html" aria-current="page">Mi lista <span class="nav-count" id="savedCount">0</span></a>
         <a href="./index.html#como-funciona">Cómo funciona</a>
         <a href="./index.html#proyecto">El proyecto</a>
+        <label class="language-switch">
+          <span class="visually-hidden">Idioma</span>
+          <select data-language-select aria-label="Seleccionar idioma">
+            <option value="es">ES · Español</option>
+            <option value="en">EN · English</option>
+          </select>
+        </label>
       </nav>
     </div>
   </header>
@@ -69,6 +76,7 @@
         <form class="list-request-card" id="requestForm" method="POST" action="https://script.google.com/macros/s/AKfycbxHRHysFjgIVKInUrOlEmfpTHP6Q4izT-R5e3Di_eDTw-YgbCMiCi7Wqnn6-IW1GoAhAA/exec" accept-charset="UTF-8">
           <h3>Enviar mi solicitud</h3>
           <input type="hidden" name="replyTo" id="formReplyTo" value="">
+          <input type="hidden" name="lang" id="formLanguage" value="es">
           <textarea hidden name="message" id="generatedMessage"></textarea>
           <p>Rellena los datos básicos. El mensaje se redactará automáticamente y se enviará al equipo al pulsar el botón.</p>
 
@@ -143,7 +151,8 @@
       <span>Iniciativa universitaria independiente · <a href="./index.html#privacidad">Privacidad, alcance y condiciones</a></span>
     </div>
   </footer>
-  <script src="./assets/js/puentes-data.js?v=20261124-form-native-fallback"></script>
+  <script src="./assets/js/i18n.js?v=20261125-bilingual-v1"></script>
+<script src="./assets/js/puentes-data.js?v=20261124-form-native-fallback"></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script src="./assets/js/mi-lista.js?v=20261125-email-v2"></script>
 </body>
