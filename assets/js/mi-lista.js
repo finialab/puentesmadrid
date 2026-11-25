@@ -61,42 +61,53 @@
       return element ? String(element.value || "").trim() : "";
     };
 
-    const name = field("requestName");
     const district = field("requestDistrict");
     const budget = field("requestBudget");
     const otherActivity = field("requestOtherActivity");
     const knownCost = field("requestKnownCost");
     const costsToCheck = field("requestCostsToCheck");
     const extraMessage = field("requestMessage");
+    const categoryNames = {
+      cultura: "Cultura",
+      deporte: "Deporte",
+      musica: "Música"
+    };
 
-    const activityText = items.length
-      ? items.map(function (item) {
-          let description = item.title + " (" + (item.area ? item.area + ", " : "") + "distrito de " + item.zone + ").";
-          description += " El coste publicado es: " + (item.price || "está pendiente de confirmar") + ".";
-          if (item.priceDetail) description += " " + item.priceDetail;
-          if (item.extraCosts) description += " También me gustaría comprobar si hay gastos adicionales como " + item.extraCosts.toLowerCase() + ".";
-          description += " La información oficial está disponible en " + item.officialUrl + ".";
-          return description;
+    const selectedActivities = items.length
+      ? items.map(function (item, index) {
+          const lines = [
+            (index + 1) + ". " + item.title,
+            "   Categoría: " + (categoryNames[item.category] || item.category || "No indicada"),
+            "   Ubicación: " + (item.area ? item.area + " · " : "") + "Distrito " + item.zone,
+            "   Coste publicado: " + (item.price || "Pendiente de confirmar con la entidad"),
+            item.priceDetail ? "   Información sobre el coste: " + item.priceDetail : "",
+            item.extraCosts ? "   Otros gastos que conviene comprobar: " + item.extraCosts : "",
+            "   Fuente oficial: " + item.officialUrl
+          ];
+          return lines.filter(Boolean).join("\n");
         }).join("\n\n")
-      : "Todavía no he seleccionado una actividad concreta, por lo que agradecería ayuda para encontrar opciones que encajen con mis preferencias.";
+      : "La persona no ha guardado una actividad concreta y solicita ayuda para encontrar opciones adecuadas.";
 
-    const paragraphs = [
-      "Hola, equipo de FINDIA PUENTES:",
-      "Me llamo " + name + " y me gustaría recibir vuestra ayuda para encontrar una actividad en Madrid en la que pueda participar y conocer gente.",
-      "Mi zona de referencia es " + (district || "Madrid; todavía no tengo una zona concreta") + " y mi presupuesto es " + (budget || "flexible, por determinar") + ".",
-      otherActivity ? "En particular, me interesa: " + otherActivity + "." : "",
-      knownCost ? "Me han indicado este precio: " + knownCost + ". Me gustaría saber si es el coste completo o si hay algún pago adicional." : "",
-      costsToCheck ? "Antes de decidirme, agradecería que me ayudaseis a comprobar estos posibles gastos: " + costsToCheck + "." : "",
-      "He estado mirando vuestra selección y estas son las opciones que me han llamado la atención:",
-      activityText,
-      extraMessage ? "Quería añadir también lo siguiente: " + extraMessage : "",
-      "He leído y acepto el aviso de privacidad y las condiciones de uso.",
-      "Muchas gracias por vuestro tiempo y por la ayuda. Quedo pendiente de vuestra respuesta.",
-      "Un saludo,",
-      name
-    ];
+    const preferences = [
+      "Zona de referencia: " + (district || "No indicada; puede valorar opciones de Madrid capital"),
+      "Presupuesto: " + (budget || "Pendiente de concretar"),
+      otherActivity ? "Actividad que busca fuera del catálogo: " + otherActivity : "",
+      knownCost ? "Precio que le han comunicado: " + knownCost : "",
+      costsToCheck ? "Gastos que desea comprobar: " + costsToCheck : ""
+    ].filter(Boolean).join("\n");
 
-    return paragraphs.filter(Boolean).join("\n\n");
+    return [
+      "RESUMEN DE LA SOLICITUD",
+      "",
+      "PREFERENCIAS Y NECESIDADES",
+      preferences,
+      "",
+      "ACTIVIDADES SELECCIONADAS",
+      selectedActivities,
+      "",
+      "OBSERVACIONES DE LA PERSONA",
+      extraMessage || "No ha añadido observaciones."
+    ].join("\n");
   }
 
   savedContainer.addEventListener("click", function (event) {
