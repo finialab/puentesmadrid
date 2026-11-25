@@ -1,6 +1,6 @@
 # FINDIA PUENTES
 
-Web estática del proyecto FINDIA PUENTES para descubrir actividades culturales, deportivas y musicales en Madrid capital y facilitar el acompañamiento a jóvenes de 18 a 24 años.
+Web del proyecto FINDIA PUENTES para descubrir actividades culturales, deportivas y musicales en Madrid capital. Está abierta a personas españolas y extranjeras, sin límite de edad.
 
 El sitio está publicado actualmente en el dominio personalizado `findialab.me`. El nombre público del proyecto y de la web es **FINDIA PUENTES**.
 
@@ -38,7 +38,7 @@ Las opciones se ordenan por prioridad de coste: oportunidades con posibilidades 
 ## Seguridad y protección de datos del formulario
 
 - El formulario valida los datos en el servidor, exige la casilla de privacidad, usa un campo trampa y limita la frecuencia de los envíos.
-- Cloudflare Turnstile está temporalmente desactivado mientras corregimos la integración Siteverify. No se debe afirmar que CAPTCHA está activo hasta validar un token real desde el servidor.
+- Cloudflare Turnstile está integrado en el formulario: el token se valida en servidor mediante Siteverify. La activación depende de que el proyecto propietario de Apps Script tenga configurada la propiedad privada `TURNSTILE_SECRET_KEY` y de que la última versión esté publicada.
 - Los datos enviados se entregan al buzón de FINDIA PUENTES mediante Google Apps Script/MailApp. No existe una base de datos propia de solicitudes. Antes del piloto, el equipo debe definir y publicar responsable del tratamiento, base jurídica, conservación de correos y cómo ejercer derechos.
 - No publicar contraseñas, claves privadas ni datos personales en el repositorio.
 
@@ -46,6 +46,6 @@ Las opciones se ordenan por prioridad de coste: oportunidades con posibilidades 
 Cada ficha enlaza a la fuente oficial del Ayuntamiento de Madrid. Comprobar horarios, tarifas, edades, requisitos y plazas antes de modificar una ficha. Actualizar `verifiedOn` cuando se vuelva a revisar el catálogo.
 
 ## Alcance y privacidad
-El catálogo contiene 15 fichas seleccionadas de Madrid capital (cinco de cultura, cinco de deporte y cinco de música); no es un directorio exhaustivo ni garantiza plazas. La lista de interés permanece en `sessionStorage` durante la sesión de esa pestaña y se puede revisar en `mi-lista.html`. El buscador permite elegir entre los 21 distritos y prioriza los distritos próximos.
+El catálogo contiene 15 fichas seleccionadas de Madrid capital (cinco de cultura, cinco de deporte y cinco de música); no es un directorio exhaustivo ni garantiza plazas. FINDIA PUENTES no establece límite de edad ni de nacionalidad, aunque cada entidad puede tener requisitos propios para sus actividades. La lista de interés permanece en `sessionStorage` durante la sesión de esa pestaña y se puede revisar en `mi-lista.html`. El buscador permite elegir entre los 21 distritos y prioriza los distritos próximos.
 
 La web no solicita dirección exacta, no usa GPS, no incorpora analítica ni almacena la lista de actividades en un servidor. El equipo debe revisar y aprobar el protocolo de privacidad, el consentimiento, el tratamiento de datos por Google Apps Script y las responsabilidades antes de iniciar un piloto con participantes. FINDIA PUENTES se presenta como una iniciativa universitaria en desarrollo y no afirma colaboraciones que todavía no estén confirmadas.
