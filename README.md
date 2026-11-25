@@ -31,11 +31,10 @@ Las opciones se ordenan por prioridad de coste: oportunidades con posibilidades 
 
 ## Seguridad y protección de datos del formulario
 
-- Las páginas aplican una política CSP mediante metaetiqueta: limita scripts y estilos al propio dominio, bloquea objetos y marcos, y permite el envío del formulario únicamente a Google Apps Script. También aplican `strict-origin-when-cross-origin` para reducir la información de referencia compartida con otros dominios.
-- El servidor valida los campos, exige la casilla de privacidad, usa un honeypot y limita la frecuencia de los envíos (pausa global, pausa por correo y tope diario). Estos controles ayudan a reducir abuso, pero no equivalen a un CAPTCHA y no detienen todos los bots.
-- El formulario incorpora el widget público de Cloudflare Turnstile para `findialab.me`. El servidor valida cada token con Siteverify y comprueba que el hostname y la acción sean los esperados. **Para completar la activación, el propietario debe guardar la clave secreta como propiedad `TURNSTILE_SECRET_KEY` en Apps Script y publicar una nueva versión.** Hasta entonces, el servidor rechaza los envíos de forma segura. La clave secreta nunca debe guardarse en GitHub ni en JavaScript del navegador.
-- El formulario entrega los datos al buzón de FINDIA PUENTES a través de Google Apps Script/MailApp. No existe una base de datos propia de solicitudes. El equipo debe definir y publicar quién es el responsable del tratamiento, la base jurídica, el plazo de conservación de los correos y cómo ejercer los derechos de protección de datos antes de iniciar el piloto.
-- El endpoint de Apps Script es público por diseño para aceptar formularios anónimos: su URL no es una contraseña ni debe tratarse como secreto. No publicar nunca contraseñas, claves privadas o datos personales en el repositorio.
+- El formulario valida los datos en el servidor, exige la casilla de privacidad, usa un campo trampa y limita la frecuencia de los envíos.
+- Cloudflare Turnstile está temporalmente desactivado mientras corregimos la integración Siteverify. No se debe afirmar que CAPTCHA está activo hasta validar un token real desde el servidor.
+- Los datos enviados se entregan al buzón de FINDIA PUENTES mediante Google Apps Script/MailApp. No existe una base de datos propia de solicitudes. Antes del piloto, el equipo debe definir y publicar responsable del tratamiento, base jurídica, conservación de correos y cómo ejercer derechos.
+- No publicar contraseñas, claves privadas ni datos personales en el repositorio.
 
 ## Actualización del catálogo
 Cada ficha enlaza a la fuente oficial del Ayuntamiento de Madrid. Comprobar horarios, tarifas, edades, requisitos y plazas antes de modificar una ficha. Actualizar `verifiedOn` cuando se vuelva a revisar el catálogo.
