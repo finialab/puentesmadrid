@@ -157,11 +157,9 @@ function doPost(e) {
     // Si se pulsa Ejecutar en el editor, Google no pasa el evento e.
     if (!e || !e.postData) {
       console.error("doPost invoked without HTTP POST event. Do not run doPost manually from the editor.");
-      return renderPage_(
-        "Prueba no válida",
+      return renderPage_("Prueba no válida",
         "No ejecutes doPost desde el botón Ejecutar del editor. Para comprobar el correo usa testMailDelivery; para comprobar el formulario, envía una solicitud desde findialab.me.",
-        false
-      );
+        false, language);
     }
 
     console.log("doPost: HTTP POST received");
@@ -169,7 +167,7 @@ function doPost(e) {
     stage = "comprobación de tamaño";
     const requestLength = e && e.postData ? Number(e.postData.length || 0) : 0;
     if (requestLength > CONFIG.maxRequestBytes) {
-      return renderPage_("Solicitud demasiado grande", "El formulario supera el tamaño permitido. Reduce el texto e inténtalo de nuevo.", false);
+      return renderPage_("Solicitud demasiado grande", "El formulario supera el tamaño permitido. Reduce el texto e inténtalo de nuevo.", false, language);
     }
 
     stage = "lectura de campos";
@@ -178,11 +176,9 @@ function doPost(e) {
     if (Object.keys(p).length === 0) {
       console.error("HTTP POST received but no form fields were parsed. postType=" +
         String(e.postData.type || "unknown") + "; postLength=" + String(e.postData.length || 0));
-      return renderPage_(
-        "Formulario sin datos",
+      return renderPage_("Formulario sin datos",
         "El servidor ha recibido una petición POST, pero no ha podido leer los campos. Recarga Mi lista e inténtalo de nuevo.",
-        false
-      );
+        false, language);
     }
     const parameterNames = Object.keys(p);
     const postType = e && e.postData ? String(e.postData.type || "") : "sin postData";
@@ -191,11 +187,9 @@ function doPost(e) {
 
     // Campo trampa para bots. Se responde como recibido, pero no se envía nada.
     if (String(p.website || "").trim()) {
-      return renderPage_(
-        "Solicitud recibida",
+      return renderPage_("Solicitud recibida",
         "Gracias. Puedes volver a FINDIA PUENTES.",
-        true
-      );
+        true, language);
     }
 
     // Verificación anti-bots obligatoria en servidor.
@@ -206,7 +200,7 @@ function doPost(e) {
       const message = turnstileCheck.reason === "not-configured"
         ? "La protección de seguridad todavía no está configurada en el servidor. No se ha enviado la solicitud; inténtalo más tarde."
         : "No se ha podido validar la verificación de seguridad. Recarga el formulario, completa de nuevo la comprobación e inténtalo otra vez.";
-      return renderPage_("No se ha podido verificar la solicitud", message, false);
+      return renderPage_("No se ha podido verificar la solicitud", message, false, language);
     }
 
     // El campo honeypot, la verificación de Cloudflare y los límites
@@ -219,30 +213,24 @@ function doPost(e) {
     const consent = String(p.consent || "").toLowerCase();
 
     if (name.length < 2 || !email || message.length < 20 || consent !== "on") {
-      return renderPage_(
-        "No se ha podido enviar",
+      return renderPage_("No se ha podido enviar",
         "Faltan datos obligatorios o no has marcado la casilla de aceptación del aviso de privacidad y las condiciones de uso.",
-        false
-      );
+        false, language);
     }
 
     stage = "control de frecuencia";
     if (isRateLimited_(email)) {
-      return renderPage_(
-        "Espera un momento",
+      return renderPage_("Espera un momento",
         "Ya se ha recibido una solicitud reciente desde este correo. Espera unos segundos antes de volver a enviarla.",
-        false
-      );
+        false, language);
     }
 
     stage = "comprobación de cuota";
     const quota = MailApp.getRemainingDailyQuota();
     if (quota < 1) {
-      return renderPage_(
-        "Servicio temporalmente no disponible",
+      return renderPage_("Servicio temporalmente no disponible",
         "La cuenta de correo ha alcanzado su límite diario de envíos. Inténtalo más tarde o contacta directamente con FINDIA PUENTES.",
-        false
-      );
+        false, language);
     }
 
     stage = "preparación del correo";
@@ -299,18 +287,14 @@ function doPost(e) {
     console.log("doPost: MailApp accepted the request email.");
     stage = "respuesta de confirmación";
 
-    return renderPage_(
-      "¡Solicitud enviada!",
+    return renderPage_("¡Solicitud enviada!",
       "Tu solicitud se ha enviado correctamente al equipo de FINDIA PUENTES. Puedes volver a la web.",
-      true
-    );
+      true, language);
   } catch (error) {
     console.error("Fallo en doPost. Etapa=" + stage + "; error=" + (error && error.stack ? error.stack : error));
-    return renderPage_(
-      "No se ha podido enviar",
+    return renderPage_("No se ha podido enviar",
       "El envío ha fallado durante esta etapa: " + stage + ". No se ha confirmado ningún envío. Consulta Apps Script → Ejecuciones para ver el detalle técnico.",
-      false
-    );
+      false, language);
   }
 }
 
