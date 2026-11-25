@@ -33,7 +33,9 @@
     catch (error) { showToast("No se ha podido guardar la lista en esta pestaña."); }
   }
   let toastTimer = null;
-  const categoryNames = { cultura: "Cultura", deporte: "Deporte", musica: "Música" };
+  const T = window.PUENTES_T || function (value) { return value; };
+  const isEnglish = function () { return window.PUENTES_LANG === "en"; };
+  const categoryNames = { cultura: T("Cultura"), deporte: T("Deporte"), musica: T("Música") };
 
   function escapeHtml(value) {
     return String(value == null ? "" : value).replace(/[&<>"']/g, function (char) {
@@ -54,8 +56,8 @@
     townSelect.disabled = !district || district === "__all";
     townSelect.value = "";
     townSelect.placeholder = townSelect.disabled
-      ? "Selecciona primero un distrito"
-      : "Ej. Embajadores, Justicia, Pacífico...";
+      ? T("Selecciona primero un distrito")
+      : (isEnglish() ? "e.g. Embajadores, Justicia, Pacífico..." : "Ej. Embajadores, Justicia, Pacífico...");
   }
   function scoreLocation(item) {
     const district = zoneSelect.value;
@@ -69,12 +71,12 @@
     return 3;
   }
   function getLocationLabel(item) {
-    if (zoneSelect.value === "__all") return "Madrid capital";
+    if (zoneSelect.value === "__all") return T("Madrid capital");
     const score = scoreLocation(item);
-    if (score === 0) return "En tu barrio";
-    if (score === 1) return "En tu distrito";
-    if (score === 2) return "Distrito próximo";
-    return "Otro distrito de Madrid";
+    if (score === 0) return T("En tu barrio");
+    if (score === 1) return T("En tu distrito");
+    if (score === 2) return T("Distrito próximo");
+    return T("Otro distrito de Madrid");
   }
   function mapUrl(item) {
     const query = item.mapsQuery || item.address;
@@ -98,7 +100,7 @@
   }
   function priceBadge(item) {
     const labels = { free: "Gratis", freeOrVaries: "Hay opciones gratuitas", low: "Coste bajo publicado", medium: "Coste medio publicado", high: "Coste alto", varies: "Precio por confirmar", unknown: "Precio no publicado" };
-    return labels[item.priceType] || "Precio por confirmar";
+    return T(labels[item.priceType] || "Precio por confirmar");
   }
   function renderCard(item) {
     const saved = selected.has(item.id);
@@ -111,27 +113,27 @@
         '<div class="card-topline"><span class="card-category">', escapeHtml(categoryNames[item.category] || item.category), '</span>',
           '<span class="location-tag', isOther ? ' is-other' : '', '">', escapeHtml(locality), '</span></div>',
         '<h3>', escapeHtml(item.title), '</h3>',
-        '<p class="card-place">', escapeHtml(item.area ? item.area + " · " : ""), 'Distrito ', escapeHtml(item.zone), '</p>',
+        '<p class="card-place">', escapeHtml(item.area ? item.area + " · " : ""), escapeHtml(isEnglish() ? "District " : "Distrito "), escapeHtml(item.zone), '</p>',
         '<p class="card-summary">', escapeHtml(item.summary), '</p>',
-        '<div class="card-activity"><strong>Qué puedes encontrar</strong>', escapeHtml(item.offer), '</div>',
+        '<div class="card-activity"><strong>', escapeHtml(T("Qué puedes encontrar")), '</strong>', escapeHtml(item.offer), '</div>',
         '<dl class="card-facts">',
-          '<div class="card-fact"><dt>Dirección</dt><dd>', escapeHtml(item.address), '</dd></div>',
-          '<div class="card-fact"><dt>Acceso</dt><dd>', escapeHtml(item.access), '</dd></div>',
-          '<div class="card-fact"><dt>Edad</dt><dd>', escapeHtml(item.age), '</dd></div>',
+          '<div class="card-fact"><dt>', escapeHtml(T("Dirección")), '</dt><dd>', escapeHtml(item.address), '</dd></div>',
+          '<div class="card-fact"><dt>', escapeHtml(T("Acceso")), '</dt><dd>', escapeHtml(item.access), '</dd></div>',
+          '<div class="card-fact"><dt>', escapeHtml(T("Edad")), '</dt><dd>', escapeHtml(item.age), '</dd></div>',
         '</dl>',
         '<div class="cost-panel">',
-          '<div class="cost-panel-head"><strong>Coste orientativo</strong><span class="price-pill', priceClass, '">', escapeHtml(priceBadge(item)), '</span></div>',
-          '<p class="cost-main">', escapeHtml(item.price || "Consultar con la entidad."), '</p>',
+          '<div class="cost-panel-head"><strong>', escapeHtml(T("Coste orientativo")), '</strong><span class="price-pill', priceClass, '">', escapeHtml(priceBadge(item)), '</span></div>',
+          '<p class="cost-main">', escapeHtml(item.price || T("Consultar con la entidad.")), '</p>',
           item.priceDetail ? '<p class="cost-detail">' + escapeHtml(item.priceDetail) + '</p>' : '',
-          item.extraCosts ? '<p class="cost-extras"><strong>Comprueba también:</strong> ' + escapeHtml(item.extraCosts) + '</p>' : '',
-          item.priceSourceUrl ? '<a class="cost-source" href="' + escapeHtml(item.priceSourceUrl) + '" target="_blank" rel="noopener noreferrer">Consultar tarifas oficiales ↗</a>' : '',
+          item.extraCosts ? '<p class="cost-extras"><strong>' + escapeHtml(T("Comprueba también:")) + '</strong> ' + escapeHtml(item.extraCosts) + '</p>' : '',
+          item.priceSourceUrl ? '<a class="cost-source" href="' + escapeHtml(item.priceSourceUrl) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(T("Consultar tarifas oficiales ↗")) + '</a>' : '',
         '</div>',
         '<div class="card-actions">',
-          '<a class="card-action" href="', escapeHtml(item.officialUrl), '" target="_blank" rel="noopener noreferrer">Fuente oficial ↗</a>',
-          map ? '<a class="card-action" href="' + escapeHtml(map) + '" target="_blank" rel="noopener noreferrer">Ver mapa ↗</a>' : '',
+          '<a class="card-action" href="', escapeHtml(item.officialUrl), '" target="_blank" rel="noopener noreferrer">', escapeHtml(T("Fuente oficial ↗")), '</a>',
+          map ? '<a class="card-action" href="' + escapeHtml(map) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(T("Ver mapa ↗")) + '</a>' : '',
           '<button class="card-action card-action-save', saved ? ' is-saved' : '', '" type="button" data-save="', escapeHtml(item.id), '" aria-pressed="', saved ? 'true' : 'false', '">', saved ? '✓ En mi lista' : '+ Añadir a mi lista', '</button>',
         '</div>',
-        '<p class="card-source">Fuente: ', escapeHtml(item.sourceName), ' · Revisión: ', escapeHtml(config.verifiedOn || "24/11/2026"), '</p>',
+        '<p class="card-source">', escapeHtml(T("Fuente:")), ' ', escapeHtml(item.sourceName), ' · ', escapeHtml(T("Revisión:")), ' ', escapeHtml(config.verifiedOn || "24/11/2026"), '</p>',
       '</article>'
     ].join("");
   }
@@ -143,18 +145,18 @@
     const neighbourhood = townSelect.value.trim();
     const list = getEntries();
     const isAll = district === "__all";
-    resultsTitle.textContent = category === "all" ? "Opciones para explorar en Madrid" : categoryNames[category] + " en Madrid";
+    resultsTitle.textContent = category === "all" ? T("Opciones para explorar en Madrid") : categoryNames[category] + (isEnglish() ? " in Madrid" : " en Madrid");
     if (isAll) {
-      resultsDescription.textContent = "Todas las fichas de Madrid capital, agrupadas por categoría y ordenadas por distrito.";
+      resultsDescription.textContent = T("Todas las fichas de Madrid capital, agrupadas por categoría y ordenadas por distrito.");
     } else {
       const nearbyCount = list.filter(function (item) { return scoreLocation(item) <= 2; }).length;
-      resultsDescription.textContent = (neighbourhood ? "Referencia: " + neighbourhood + " · " : "") +
+      resultsDescription.textContent = (neighbourhood ? T("Referencia:") + " " + neighbourhood + " · " : "") +
         (nearbyCount > 0
-          ? "Primero tu distrito (" + district + "), después los distritos próximos y, por último, otras zonas de Madrid capital."
-          : "Aún no tenemos fichas en " + district + " ni en sus distritos próximos para esta selección. Mostramos otras opciones del municipio de Madrid.") +
-        " No calculamos distancias exactas.";
+          ? (isEnglish() ? "First your district (" + district + "), then nearby districts and finally other areas of Madrid city." : "Primero tu distrito (" + district + "), después los distritos próximos y, por último, otras zonas de Madrid capital.")
+          : (isEnglish() ? "We do not yet have listings in " + district + " or nearby districts for this selection. We are showing other options across Madrid city." : "Aún no tenemos fichas en " + district + " ni en sus distritos próximos para esta selección. Mostramos otras opciones del municipio de Madrid.")) +
+        (isEnglish() ? " We do not calculate exact distances." : " No calculamos distancias exactas.");
     }
-    resultCount.textContent = list.length + (list.length === 1 ? " opción" : " opciones");
+    resultCount.textContent = list.length + (isEnglish() ? (list.length === 1 ? " option" : " options") : (list.length === 1 ? " opción" : " opciones"));
     resourceGrid.innerHTML = "";
     emptyState.hidden = list.length > 0;
     resourceGrid.hidden = list.length === 0;
@@ -163,7 +165,7 @@
   }
   function renderSelection() {
     const items = data.filter(function (item) { return selected.has(item.id); });
-    const countLabel = items.length + (items.length === 1 ? " actividad guardada" : " actividades guardadas");
+    const countLabel = items.length + (isEnglish() ? (items.length === 1 ? " activity saved" : " activities saved") : (items.length === 1 ? " actividad guardada" : " actividades guardadas"));
     const counter = document.getElementById("selectionCount");
     if (counter) counter.textContent = countLabel;
     const savedCount = document.getElementById("savedCount");
@@ -189,7 +191,7 @@
   searchForm.addEventListener("submit", function (event) {
     event.preventDefault();
     if (!zoneSelect.value) {
-      showToast("Selecciona primero un distrito de Madrid.");
+      showToast(T("Selecciona primero un distrito de Madrid."));
       zoneSelect.focus();
       return;
     }
@@ -223,10 +225,10 @@
     const id = button.getAttribute("data-save");
     if (selected.has(id)) {
       selected.delete(id);
-      showToast("Has quitado la actividad de tu lista.");
+      showToast(T("Has quitado la actividad de tu lista."));
     } else {
       selected.add(id);
-      showToast("Actividad guardada en tu lista.");
+      showToast(T("Actividad guardada en tu lista."));
     }
     persistSavedIds();
     renderResults();
@@ -248,4 +250,12 @@
 
   updateTownOptions();
   renderSelection();
+  document.addEventListener("puentes:languagechange", function () {
+    categoryNames.cultura = T("Cultura");
+    categoryNames.deporte = T("Deporte");
+    categoryNames.musica = T("Música");
+    updateTownOptions();
+    if (hasSearched) renderResults();
+    renderSelection();
+  });
 })();
