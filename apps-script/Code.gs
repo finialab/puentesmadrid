@@ -214,6 +214,7 @@ function doPost(e) {
     const email = cleanEmail_(p.email);
     const message = cleanMessage_(p.message, CONFIG.maxMessageLength) ||
       buildMessageFromParameters_(p);
+    const language = String(p.lang || "es").toLowerCase() === "en" ? "en" : "es";
     const consent = String(p.consent || "").toLowerCase();
 
     if (name.length < 2 || !email || message.length < 20 || consent !== "on") {
@@ -244,8 +245,27 @@ function doPost(e) {
     }
 
     stage = "preparación del correo";
-    const receivedAt = Utilities.formatDate(new Date(), "Europe/Madrid", "dd/MM/yyyy 'a las' HH:mm");
-    const body = [
+    const receivedAt = Utilities.formatDate(
+      new Date(),
+      "Europe/Madrid",
+      language === "en" ? "dd/MM/yyyy 'at' HH:mm" : "dd/MM/yyyy 'a las' HH:mm"
+    );
+    const body = language === "en" ? [
+      "NEW GUIDANCE REQUEST — FINDIA PUENTES",
+      "Received on " + receivedAt,
+      "",
+      "CONTACT DETAILS",
+      "Name: " + name,
+      "Email address: " + email,
+      "",
+      "REQUEST DETAILS",
+      message,
+      "",
+      "CONSENT",
+      "The person ticked the box confirming acceptance of the privacy notice and terms of use.",
+      "",
+      "This email was generated automatically from https://findialab.me."
+    ].join("\n") : [
       "NUEVA SOLICITUD DE ORIENTACIÓN — FINDIA PUENTES",
       "Recibida el " + receivedAt,
       "",
@@ -268,7 +288,7 @@ function doPost(e) {
     const recipient = getRecipient_();
     MailApp.sendEmail({
       to: recipient,
-      subject: "Nueva solicitud FINDIA PUENTES — " + name,
+      subject: (language === "en" ? "New FINDIA PUENTES request — " : "Nueva solicitud FINDIA PUENTES — ") + name,
       body: body,
       htmlBody: htmlBody,
       name: "FINDIA PUENTES",
@@ -373,7 +393,14 @@ function formatEmailHtml_(plainText) {
     "PREFERENCIAS Y NECESIDADES",
     "ACTIVIDADES SELECCIONADAS",
     "OBSERVACIONES DE LA PERSONA",
-    "CONSENTIMIENTO"
+    "CONSENTIMIENTO",
+    "CONTACT DETAILS",
+    "REQUEST DETAILS",
+    "REQUEST SUMMARY",
+    "PREFERENCES AND NEEDS",
+    "SELECTED ACTIVITIES",
+    "ADDITIONAL NOTES",
+    "CONSENT"
   ];
 
   const content = lines.map(function (line) {
@@ -387,7 +414,7 @@ function formatEmailHtml_(plainText) {
     if (/^\d+\.\s/.test(trimmed)) {
       return '<h3 style="margin:13px 0 5px;font-size:14px;color:#173f39;">' + safe + "</h3>";
     }
-    if (/^Recibida el /.test(trimmed)) {
+    if (/^(Recibida el |Received on )/.test(trimmed)) {
       return '<p style="margin:0 0 14px;font-size:12px;color:#7a8980;">' + safe + "</p>";
     }
     if (/^   /.test(line)) {
