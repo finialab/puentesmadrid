@@ -11,6 +11,8 @@
   const status = document.getElementById("requestStatus");
   const form = document.getElementById("requestForm");
   const sendButton = document.getElementById("sendRequest");
+  const T = window.PUENTES_T || function (value) { return value; };
+  const isEnglish = function () { return window.PUENTES_LANG === "en"; };
 
   function escapeHtml(value) {
     return String(value == null ? "" : value).replace(/[&<>"']/g, function (char) {
@@ -28,7 +30,7 @@
   let selected = new Set(readIds());
   function persist() {
     try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(selected))); }
-    catch (error) { showStatus("No hemos podido actualizar la lista en esta pestaña. Prueba a recargar la página.", "error"); }
+    catch (error) { showStatus(T("No hemos podido actualizar la lista en esta pestaña. Prueba a recargar la página."), "error"); }
   }
   function showStatus(message, type) {
     status.textContent = message;
@@ -36,21 +38,22 @@
   }
   function render() {
     const items = data.filter(function (item) { return selected.has(item.id); });
-    const label = items.length + (items.length === 1 ? " actividad guardada" : " actividades guardadas");
+    const label = items.length + (isEnglish() ? (items.length === 1 ? " activity saved" : " activities saved") : (items.length === 1 ? " actividad guardada" : " actividades guardadas"));
     count.textContent = label;
     savedCount.textContent = String(items.length);
     emptyState.hidden = items.length > 0;
     savedContainer.hidden = items.length === 0;
     savedContainer.innerHTML = items.map(function (item) {
+      const category = T(item.category === "cultura" ? "Cultura" : item.category === "deporte" ? "Deporte" : "Música");
       return '<article class="saved-activity-card">' +
-        '<p class="saved-activity-meta">' + escapeHtml(item.category === "cultura" ? "Cultura" : item.category === "deporte" ? "Deporte" : "Música") + " · " + escapeHtml(item.area ? item.area + " · " : "") + "Distrito " + escapeHtml(item.zone) + '</p>' +
-        '<h3>' + escapeHtml(item.title) + '</h3>' +
-        '<p class="saved-activity-price">' + escapeHtml(item.price || "Precio por confirmar con la entidad") + '</p>' +
-        (item.priceDetail ? '<p class="saved-activity-detail">' + escapeHtml(item.priceDetail) + '</p>' : '') +
-        (item.extraCosts ? '<p class="saved-activity-detail"><strong>Otros gastos que conviene comprobar:</strong> ' + escapeHtml(item.extraCosts) + '</p>' : '') +
+        '<p class="saved-activity-meta">' + escapeHtml(category) + " · " + escapeHtml(item.area ? item.area + " · " : "") + escapeHtml(isEnglish() ? "District " : "Distrito ") + escapeHtml(item.zone) + '</p>' +
+        '<h3>' + escapeHtml(T(item.title)) + '</h3>' +
+        '<p class="saved-activity-price">' + escapeHtml(T(item.price || "Precio por confirmar con la entidad")) + '</p>' +
+        (item.priceDetail ? '<p class="saved-activity-detail">' + escapeHtml(T(item.priceDetail)) + '</p>' : '') +
+        (item.extraCosts ? '<p class="saved-activity-detail"><strong>' + escapeHtml(T("Otros gastos que conviene comprobar:")) + '</strong> ' + escapeHtml(T(item.extraCosts)) + '</p>' : '') +
         '<div class="saved-activity-actions">' +
-          '<a href="' + escapeHtml(item.officialUrl) + '" target="_blank" rel="noopener noreferrer">Fuente oficial ↗</a>' +
-          '<button type="button" data-remove="' + escapeHtml(item.id) + '">Quitar de mi lista</button>' +
+          '<a href="' + escapeHtml(item.officialUrl) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(T("Fuente oficial ↗")) + '</a>' +
+          '<button type="button" data-remove="' + escapeHtml(item.id) + '">' + escapeHtml(T("Quitar de mi lista")) + '</button>' +
         '</div></article>';
     }).join("");
   }
@@ -60,44 +63,59 @@
       const element = document.getElementById(id);
       return element ? String(element.value || "").trim() : "";
     };
-
     const district = field("requestDistrict");
     const budget = field("requestBudget");
     const otherActivity = field("requestOtherActivity");
     const knownCost = field("requestKnownCost");
     const costsToCheck = field("requestCostsToCheck");
     const extraMessage = field("requestMessage");
+
     const categoryNames = {
-      cultura: "Cultura",
-      deporte: "Deporte",
-      musica: "Música"
+      cultura: T("Cultura"),
+      deporte: T("Deporte"),
+      musica: T("Música")
     };
 
     const selectedActivities = items.length
       ? items.map(function (item, index) {
+          const location = (item.area ? item.area + " · " : "") +
+            (isEnglish() ? "District " : "Distrito ") + item.zone;
           const lines = [
-            (index + 1) + ". " + item.title,
-            "   Categoría: " + (categoryNames[item.category] || item.category || "No indicada"),
-            "   Ubicación: " + (item.area ? item.area + " · " : "") + "Distrito " + item.zone,
-            "   Coste publicado: " + (item.price || "Pendiente de confirmar con la entidad"),
-            item.priceDetail ? "   Información sobre el coste: " + item.priceDetail : "",
-            item.extraCosts ? "   Otros gastos que conviene comprobar: " + item.extraCosts : "",
-            item.priceSourceUrl ? "   Fuente de tarifas: " + item.priceSourceUrl : "",
-            "   Fuente oficial: " + item.officialUrl
+            (index + 1) + ". " + T(item.title),
+            (isEnglish() ? "   Category: " : "   Categoría: ") + (categoryNames[item.category] || item.category || (isEnglish() ? "Not specified" : "No indicada")),
+            (isEnglish() ? "   Location: " : "   Ubicación: ") + location,
+            (isEnglish() ? "   Published cost: " : "   Coste publicado: ") + T(item.price || "Pendiente de confirmar con la entidad"),
+            item.priceDetail ? (isEnglish() ? "   Cost information: " : "   Información sobre el coste: ") + T(item.priceDetail) : "",
+            item.extraCosts ? (isEnglish() ? "   Other costs to check: " : "   Otros gastos que conviene comprobar: ") + T(item.extraCosts) : "",
+            item.priceSourceUrl ? (isEnglish() ? "   Tariff source: " : "   Fuente de tarifas: ") + item.priceSourceUrl : "",
+            (isEnglish() ? "   Official source: " : "   Fuente oficial: ") + item.officialUrl
           ];
           return lines.filter(Boolean).join("\n");
         }).join("\n\n")
-      : "La persona no ha guardado una actividad concreta y solicita ayuda para encontrar opciones adecuadas.";
+      : (isEnglish()
+          ? "The person has not saved a specific activity and is asking for help finding suitable options."
+          : "La persona no ha guardado una actividad concreta y solicita ayuda para encontrar opciones adecuadas.");
 
     const preferences = [
-      "Zona de referencia: " + (district || "No indicada; puede valorar opciones de Madrid capital"),
-      "Presupuesto: " + (budget || "Pendiente de concretar"),
-      otherActivity ? "Actividad que busca fuera del catálogo: " + otherActivity : "",
-      knownCost ? "Precio que le han comunicado: " + knownCost : "",
-      costsToCheck ? "Gastos que desea comprobar: " + costsToCheck : ""
+      (isEnglish() ? "Area of interest: " : "Zona de referencia: ") + (district || (isEnglish() ? "Not specified; options across Madrid city can be considered" : "No indicada; puede valorar opciones de Madrid capital")),
+      (isEnglish() ? "Budget: " : "Presupuesto: ") + T(budget || "Pendiente de concretar"),
+      otherActivity ? (isEnglish() ? "Activity not listed in the catalogue: " : "Actividad que busca fuera del catálogo: ") + otherActivity : "",
+      knownCost ? (isEnglish() ? "Price quoted: " : "Precio que le han comunicado: ") + knownCost : "",
+      costsToCheck ? (isEnglish() ? "Costs to check: " : "Gastos que desea comprobar: ") + costsToCheck : ""
     ].filter(Boolean).join("\n");
 
-    return [
+    return isEnglish() ? [
+      "REQUEST SUMMARY",
+      "",
+      "PREFERENCES AND NEEDS",
+      preferences,
+      "",
+      "SELECTED ACTIVITIES",
+      selectedActivities,
+      "",
+      "ADDITIONAL NOTES",
+      extraMessage || "No additional notes."
+    ].join("\n") : [
       "RESUMEN DE LA SOLICITUD",
       "",
       "PREFERENCIAS Y NECESIDADES",
@@ -152,6 +170,7 @@
     form.method = "POST";
     document.getElementById("formReplyTo").value = senderEmail;
     document.getElementById("generatedMessage").value = buildEmailBody();
+    document.getElementById("formLanguage").value = window.PUENTES_LANG || "es";
 
     sendButton.disabled = true;
     sendButton.textContent = "Enviando…";
@@ -177,4 +196,6 @@
   });
 
   render();
+  document.addEventListener("puentes:languagechange", function () { render(); });
+
 })();
