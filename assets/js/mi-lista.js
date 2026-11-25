@@ -153,7 +153,7 @@
     const turnstileResponse = form.querySelector('input[name="cf-turnstile-response"]');
     if (!turnstileResponse || !turnstileResponse.value.trim()) {
       event.preventDefault();
-      showStatus("Completa la verificación de seguridad antes de enviar la solicitud.", "error");
+      showStatus(T("Completa la verificación de seguridad antes de enviar la solicitud."), "error");
       return;
     }
 
@@ -161,7 +161,7 @@
     const validEndpoint = /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/.test(endpoint);
     if (!validEndpoint) {
       event.preventDefault();
-      showStatus("El servicio de envío no está configurado correctamente. No se ha enviado nada. Contacta con el equipo técnico.", "error");
+      showStatus(T("El servicio de envío no está configurado correctamente. No se ha enviado nada. Contacta con el equipo técnico."), "error");
       return;
     }
 
@@ -173,8 +173,8 @@
     document.getElementById("formLanguage").value = window.PUENTES_LANG || "es";
 
     sendButton.disabled = true;
-    sendButton.textContent = "Enviando…";
-    showStatus("Tu solicitud se está enviando al equipo de FINDIA PUENTES…");
+    sendButton.textContent = T("Enviando…");
+    showStatus(T("Tu solicitud se está enviando al equipo de FINDIA PUENTES…"));
 
     // No cancelamos el evento: el navegador envía el formulario HTML original
     // directamente a Google Apps Script, sin AJAX ni dependencias de terceros.
@@ -185,13 +185,13 @@
   menuToggle.addEventListener("click", function () {
     const open = mainNav.classList.toggle("is-open");
     menuToggle.setAttribute("aria-expanded", open ? "true" : "false");
-    menuToggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+    menuToggle.setAttribute("aria-label", open ? T("Cerrar menú") : T("Abrir menú"));
   });
   mainNav.addEventListener("click", function (event) {
     if (event.target.closest("a")) {
       mainNav.classList.remove("is-open");
       menuToggle.setAttribute("aria-expanded", "false");
-      menuToggle.setAttribute("aria-label", "Abrir menú");
+      menuToggle.setAttribute("aria-label", T("Abrir menú"));
     }
   });
 
